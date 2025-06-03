@@ -1,0 +1,230 @@
+% !chktex-file 8
+% !chktex-file 41
+
+\appendix
+
+\section{Annexe}
+
+\setframetitle{Pire cas de la construction par sous-ensemble}
+
+\subsection{Pire cas de la construction par sous-ensemble}
+
+\subsubsection{Préambule}
+
+\begin{frame}{\myframetitle}\label{pcse}
+  \begin{block}{La méthode appliquée}
+    Prenons un automate non déterministe minimal et prouvons que sa version
+    déterministe à \(2^n\) états.
+  \end{block}
+\end{frame}
+
+\subsubsection{Preuve}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{\(A \in \NFA(\Sigma, \mathbb{N})\)}
+    \(A = (Q_A, \{0\}, \{0\}, \delta_A)\) avec~:
+    % LTeX: enabled=false
+    \begin{gather*}
+      \forall i \in \llbracket 0, n - 1 \rrbracket, \\
+      \delta_A(i, \sigma) =
+      \begin{cases}
+        \{i + 1\} &\text{si } i < n - 1 \text{ et } \sigma = a, \\
+        \{0\} &\text{si } i = n - 1 \text{ et } \sigma = a, \\
+        \{0, i\} &\text{si } i > 0 \text{ et } \sigma = b \\
+      \end{cases}
+    \end{gather*}
+    % LTeX: enabled=true
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Représentation de l'automate \(A\)}
+    % LTeX: enabled=false
+    \centering
+    \begin{tikzpicture}[
+        scale=0.65,
+        transform shape,
+        every state/.style={
+          circle,
+          minimum size=1.25cm,
+          inner sep=0
+        }
+      ]
+
+      \pgfmathsetmacro{\w}{8}
+      \pgfmathsetmacro{\h}{3}
+      \pgfmathsetmacro{\s}{270}
+      \pgfmathsetmacro{\a}{360/7}
+
+      \node[state, accepting, initial below] (0)
+      at ({\w * cos(\a * 0 + \s)}, {\h * sin(\a * 0 + \s)}) {\(0\)};
+
+      \node[state] (1)
+      at ({\w * cos(\a * 1 + \s)}, {\h * sin(\a * 1 + \s)}) {\(1\)};
+
+      \node[state] (2)
+      at ({\w * cos(\a * 2 + \s)}, {\h * sin(\a * 2 + \s)}) {\(2\)};
+
+      \node[state, draw=none] (3)
+      at ({\w * cos(\a * 3 + \s)}, {\h * sin(\a * 3 + \s)}) {\(\cdots\)};
+
+      \node[state, draw=none] (4)
+      at ({\w * cos(\a * 4 + \s)}, {\h * sin(\a * 4 + \s)}) {\(\cdots\)};
+
+      \node[state] (5)
+      at ({\w * cos(\a * 5 + \s)}, {\h * sin(\a * 5 + \s)}) {\(n - 2\)};
+
+      \node[state] (6)
+      at ({\w * cos(\a * 6 + \s)}, {\h * sin(\a * 6 + \s)}) {\(n - 1\)};
+
+      \draw
+      (1) edge[loop below] node{\(b\)} (1)
+      (2) edge[loop right] node{\(b\)} (2)
+      (3) edge[loop above] node{\(b\)} (3)
+      (4) edge[loop above] node{\(b\)} (4)
+      (5) edge[loop left] node{\(b\)} (5)
+      (6) edge[loop below] node{\(b\)} (6)
+
+      (1) edge[bend right={\a * 0.5}, below] node{\(b\)} (0)
+      (2) edge[bend right={\a * 0.5}, below] node{\(b\)} (0)
+      (3) edge[bend right={\a * 0.5}, below] node{\(b\)} (0)
+      (4) edge[bend left={\a * 0.5}, below] node{\(b\)} (0)
+      (5) edge[bend left={\a * 0.5}, below] node{\(b\)} (0)
+      (6) edge[bend left={\a * 0.5}, below] node{\(b\)} (0)
+
+      (0) edge[bend right={\a * 0.2}, above] node{\(a\)} (1)
+      (1) edge[bend right={\a * 0.5}, left] node{\(a\)} (2)
+      (2) edge[bend right={\a * 0.2}, below] node{\(a\)} (3)
+      (3) edge[bend right={\a * 0.2}, below] node{\(a\)} (4)
+      (4) edge[bend right={\a * 0.2}, below] node{\(a\)} (5)
+      (5) edge[bend right={\a * 0.5}, right] node{\(a\)} (6)
+      (6) edge[bend right={\a * 0.2}, above] node{\(a\)} (0);
+    \end{tikzpicture}
+    % LTeX: enabled=true
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Logique appliquée}
+    Pour démontrer que l'automate déterministe minimal de \(A\), noté \(M\),
+    possède \(2^n\) états, nous allons prouver que l'ensemble \(2^{Q_A}\)
+    correspond aux états accessibles et qu'aucun de ces états n'est équivalent à
+    un autre.
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Convention de notation}
+    Nous allons définir~:
+    % LTeX: enabled=false
+    \begin{align*}
+      &B_p = (b_{n - 1}, b_{n - 2}, \ldots, b_{1}, b_{0}) \\
+      &b_i =
+      \begin{cases}
+        0 & \text{si } i \in p, \\
+        1 & \text{si } i \notin p.
+      \end{cases}
+      \text{ et } p \in 2^{Q_A}
+    \end{align*}
+    % LTeX: enabled=true
+    On remarquera que les suites \(B_p\) peuvent être vu comme des nombres
+    binaires.
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Remarque}
+    Avec ça on peut remarquer que pour tout nombre \(B_p\)~:
+    % LTeX: enabled=false
+    \begin{gather*}
+      \delta_M(B_p, \sigma) =
+      \begin{cases}
+        RotateLeft(B_p) &\text{si } p \neq \varnothing \text{ et }
+        \sigma = a, \\
+        LSB(B_p, 1) &\text{si } p \neq \varnothing \land p \neq \{1\}
+        \text{ et } \sigma = b, \\
+        B_{\varnothing} &\text{si } p = \{1\} \text{ et } \sigma = b, \\
+        B_{\varnothing} &\text{si } p = \varnothing.
+      \end{cases}
+    \end{gather*}
+    % LTeX: enabled=true
+    Où \(RotateLeft(w)\) est une rotation circulaire vers la gauche des bits de
+    \(w\) et \(LSB(w, v)\) met le bit de point faible de \(w\) à \(v\).
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Remarque}
+    L'état \(0 \ldots 1 \) est accessible, car il correspond à l'état initial.
+    De même, l'état \(0 \ldots 0\) est également accessible, puisqu'en lisant un
+    \(b\) depuis \(0 \ldots 1\), on y parvient.
+  \end{block}
+
+  \pause[]
+
+  \begin{block}{Preuve par induction}
+    Nous souhaitons démontrer que tous les nombres de \(0\) à \(2^n\) peuvent
+    être générés avec uniquement les nombres \(0\) et \(1\), ainsi que les
+    opérations \(RotateLeft\) et \(LSB\). Pour cela, nous allons effectuer une
+    preuve par récurrence fondée sur la valeur du nombre \(k\).
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Base~: \(k = 0\) et \(k = 1\)}
+    La base de la récurrence est vérifiée. En effet, il est trivial de générer
+    les nombres \(0\) et \(1\) à partir des valeurs \(0\) et \(1\)
+    respectivement.
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Induction~: \(k \geq 2\)}
+    \begin{itemize}
+      \item Si \(k\) est pair, alors~:
+        \[
+          k = 2 k' \Longrightarrow k = RotateLeft(k')
+        \]
+      \item Si \(k\) est impair, ainsi~:
+        \[
+          k = k' + 1 \Longrightarrow k = LSB(k', 1)
+        \]
+    \end{itemize}
+    Par hypothèse de récurrence, \(k'\) peut être généré. Par conséquent, \(k\)
+    peut également être généré.
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Preuve par induction}
+
+    Nous avons démontré, par récurrence, que tous les nombres de \(0\) à \(2^n\)
+    peuvent être générés avec uniquement les deux opérations (\(RotateLeft\) et
+    \(LSB\)) ainsi que les deux nombres (\(0\) et \(1\)).
+  \end{block}
+
+  \pause[]
+
+  \begin{block}{\(\forall (p, q) \in 2^{Q_A}, p \nLeftrightarrow q\)}
+    Il nous suffit donc maintenant de prouver qu'aucun état n'est équivalent à
+    un autre.
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Preuve}
+    Soit \(S \in 2^{Q_A}\) et \(T \in 2^{Q}\) distinct, alors sans perte de
+    généralité, il existe un \(p\) qui est dans \(S\) et pas dans \(T\). Ainsi,
+    en partant de \(S\), le mot \(a^{n - p}\) est accepté, mais pas en partant
+    de \(T\).
+  \end{block}
+\end{frame}
+
+\subsubsection{Conclusion}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{L'automate \(M\) est minimal}
+    Par conséquent, l'automate déterministe \(M\) est minimal et à \(2^n\)
+    états.
+  \end{block}
+\end{frame}

@@ -1,0 +1,146 @@
+% !chktex-file 8
+% !chktex-file 11
+% !chktex-file 41
+
+\section{Concaténation}
+
+\setframetitle{La concaténation}
+
+\subsection{Préambule}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{La complexité exacte de la concaténation}
+    Nous allons montrer que la concaténation a une complexité déterministe
+    << exacte >> à \(m 2^n - 2^{n - 1}\).
+  \end{block}
+\end{frame}
+
+\subsection{Preuve}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{
+      Définition des automes \(A\) et \(B\) (\(\mu = (m - n + 1) \bmod n\))
+    }
+    % LTeX: enabled=false
+    \centering
+    \begin{tikzpicture}[scale=0.5, transform shape]
+      \node[state, initial] (0) {\(q_0\)};
+      \node[state, right of=0] (1) {\(q_1\)};
+      \node[state, draw=none, right of=1] (2) {\(\cdots\)};
+      \node[state, right of=2] (3) {\(q_\mu\)};
+      \node[state, draw=none, right of=3] (4) {\(\cdots\)};
+      \node[state, right of=4] (5) {\(q_{m - 2}\)};
+      \node[state, accepting, right of=5] (6) {\(q_{m - 1}\)};
+
+      \node[
+        draw,
+        rectangle,
+        thick,
+        fit=(0) (1) (2) (3) (4) (5) (6),
+        inner sep=0.5cm,
+        minimum height=3cm
+      ] (A) {};
+
+      \node[scale=2] at ([shift={(-1cm,0cm)}] A.west) {\(A\)};
+
+      \draw
+      (0) edge[above] node{\(a,b\)} (1)
+      (1) edge[above] node{\(a,b\)} (2)
+      (2) edge[above] node{\(a,b\)} (3)
+      (3) edge[above] node{\(a,b\)} (4)
+      (4) edge[above] node{\(a,b\)} (5)
+      (5) edge[above] node{\(a\)} (6)
+
+      (5) edge[below, bend left=20] node{\(b\)} (0)
+
+      (6) edge[above, bend left=20] node{\(b\)} (3)
+      (6) edge[below, bend right=25] node{\(a\)} (0);
+
+      \node[state, initial, below=5cm of 1] (0') {\(0\)};
+      \node[state, right of=0'] (1') {\(1\)};
+      \node[state, draw=none, right of=1'] (2') {\(\cdots\)};
+      \node[state, right of=2'] (3') {\(n - 2\)};
+      \node[state, accepting, right of=3'] (4') {\(n - 1\)};
+
+      \node[
+        draw,
+        rectangle,
+        thick,
+        fit=(0') (1') (2') (3') (4'),
+        inner sep=0.5cm,
+        minimum height=2cm
+      ] (B) {};
+
+      \node[scale=2] at ([shift={(-1cm,0cm)}] B.west) {\(B\)};
+
+      \draw
+      (0') edge[above] node{\(a,b\)} (1')
+      (1') edge[above] node{\(a,b\)} (2')
+      (2') edge[above] node{\(a,b\)} (3')
+      (3') edge[above] node{\(a,b\)} (4')
+
+      (4') edge[above, loop above] node{\(a\)} (4')
+      (4') edge[above, bend left=20] node{\(b\)} (0');
+    \end{tikzpicture}
+    % LTeX: enabled=true
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Représentation de l'automate \(M\)}
+    % LTeX: enabled=false
+    \centering
+    \begin{tikzpicture}[
+        scale=0.7,
+        transform shape,
+        initial distance=1cm,
+      ]
+      \node[state, initial] (0) {\(q_0\)};
+      \node[state, right=2.5cm of 0] (1) {\(q_{m - 2}\)};
+      \node[state, right of=1] (2) {\(q_{m - 1}\)};
+
+      \node[state, right of=2] (3) {\(0\)};
+      \node[state, right of=3] (4) {\(1\)};
+      \node[state, accepting, right=2.5cm of 4] (5) {\(n - 1\)};
+
+      \draw
+      (1) edge[above] node{\(a\)} (2)
+      (3) edge[above] node{\(a,b\)} (4)
+      (2) edge[above, bend left] node{\(a,b\)} (4)
+      (5) edge[below, bend left] node{\(b\)} (3);
+
+      \node[
+        draw,
+        rectangle,
+        thick,
+        fit=(0) (1) (2),
+        inner sep=0.3cm
+      ] (A) {};
+
+      \node[
+        draw,
+        rectangle,
+        thick,
+        fit=(3) (4) (5) (5),
+        inner sep=0.3cm,
+        minimum height=3cm
+      ] (B) {};
+
+      \node[above of=A, scale=1.5] {\(A\)};
+      \node[above of=B, scale=1.5] {\(B\)};
+    \end{tikzpicture}
+    % LTeX: enabled=true
+  \end{block}
+\end{frame}
+
+\subsection{Conclusion}
+
+\setframetitle{Conclusion}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Conclusion}
+    Or, la concaténation de deux langages rationnels à une complexité
+    déterministe \(m2^n - 2^{n - 1}\).\footnotemark{}
+  \end{block}
+  \footnotetext{\hyperlink{Yu1997}{\cite{Yu1997}}}
+\end{frame}

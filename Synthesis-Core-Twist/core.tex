@@ -1,0 +1,355 @@
+\section{Le trognon d'un langage}
+
+Dans cette partie, nous nous concentrerons sur un langage bien particulier, le
+<< trognon >>. Dans un premier temps, nous définirons formellement ce langage.
+Enfin, nous présenterons un algorithme de << grignotage >> permettant de le
+calculer à partir d'un automate non déterministe, l'automate du trognon du
+langage de l'automate initial. Nous présenterons ensuite une preuve de cet
+algorithme ainsi que la complexité dans le pire des cas de celui-ci. Enfin,
+pour finir, nous conclurons cette partie en faisant une courte synthèse de ce
+qu'on aura vu et de la possible continuation.
+
+\subsection{Définition}
+
+\begin{definition}[Le langage trognon]
+  Le langage \(Core(L)\) (aussi noté \(Trognon(L)\)) est construit à partir de
+  \(L\) en retirant, pour chaque mot de \(L\), un préfixe dont le miroir est
+  également un suffixe~; ce suffixe est, lui aussi, retiré~:
+  \begin{align*}
+    Core(w) &= \{v \in \Sigma^* \mid \exists u \in \Sigma^* \land w = u \cdot v
+    \cdot \overleftarrow{u}\}, \\
+    Core(L) &= \bigcup_{w \in L} Core(w).
+  \end{align*}
+\end{definition}
+
+\begin{example}
+  \vspace{-\baselineskip}
+  \begin{align*}
+    L &= \{a, b, aa, aabcaa\}, \\
+    Core(L) &= \{\varepsilon, a, b, bc, abca, aabcaa\}.
+  \end{align*}
+\end{example}
+
+Maintenant que nous savons ce qu’est le trognon d’un langage, nous allons
+présenter un algorithme permettant de construire un automate le reconnaissant,
+à partir d’un automate reconnaissant le langage initial.
+
+\subsection{Algorithme de grignotage}
+
+Notre algorithme prendra en entrée un automate non déterministe et renverra un
+automate non déterministe. Mais, avant de rentrer dans le dur de l'algorithme,
+nous regardons le principe de l'algorithme, puis nous verrons sa définition
+formelle.
+
+\subsubsection{Principe de l'algorithme}
+
+Le principe de cet algorithme est assez simple, si on prend l'automate 
+suivant~:
+\begin{figure}[H]
+  \centering
+  \captionsetup{type=figure,justification=centering}
+  \begin{tikzpicture}
+    \tikzset{
+      ->,
+      >=stealth',
+      node distance=2.5cm,
+      every state/.style={thick},
+      initial text=$ $,
+    }
+    \node[state, initial] (q1) {\(q_1\)};
+    \node[state, initial right, accepting, right of=q1] (q2) {\(q_2\)};
+    \node[state, above of=q2] (q4) {\(q_4\)};
+    \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+    \node[state, right of=q4] (q5) {\(q_5\)};
+
+    \draw
+      (q1) edge[above] node{a} (q4)
+      (q1) edge[below] node{a} (q2)
+      (q4) edge[bend right, below] node{b} (q3)
+      (q4) edge[above] node{a} (q5)
+      (q3) edge[above] node{b} (q4)
+      (q3) edge[loop right] node{a} (q3)
+      (q5) edge[bend right, above] node{b} (q4)
+      (q5) edge[loop right] node{b} (q5);
+  \end{tikzpicture}
+  \caption{Exemple d'un automate avant grignotage.}
+\end{figure}
+
+Nous devons alors le << grignoté >> de tous les mots pour en faire l'automate
+reconnaissant le trognon du langage. Avant d'essayer de le grignoter de tous
+les mots, on va tenter de le grignoter d'un seul mot, \(ab\). On va donc
+simplement << avancer >> les états initiaux de la transition \(ab\) et 
+<< reculer >> les états finaux de la transition \(ab\)~:
+\begin{align*}
+  I' &= \bigcup_{i \in I} \delta(i, ab) = \{q_3\}, \\
+  F' &= \bigcup_{f \in F} \delta^{-1}(f, ab) = \{q_4\}.
+\end{align*}
+avec \(\forall p \in \delta^{-1}(q, w) \Longrightarrow q \in
+\delta(p, w)\).
+
+\vphantom{}
+
+Et, le reste de l'automate ne changerait pas, ce qui nous donnerait à la fin~:
+\begin{figure}[H]
+  \centering
+  \captionsetup{type=figure,justification=centering}
+  \begin{tikzpicture}
+    \tikzset{
+      ->,
+      >=stealth',
+      node distance=2.5cm,
+      every state/.style={thick},
+      initial text=$ $,
+    }
+    \node[state] (q1) {\(q_1\)};
+    \node[state, right of=q1] (q2) {\(q_2\)};
+    \node[state, accepting, above of=q2] (q4) {\(q_4\)};
+    \node[state, initial above, right of=q2] (q3) {\(q_3\)};
+    \node[state, right of=q4] (q5) {\(q_5\)};
+
+    \draw
+      (q1) edge[above] node{a} (q4)
+      (q1) edge[below] node{a} (q2)
+      (q4) edge[bend right, below] node{b} (q3)
+      (q4) edge[above] node{a} (q5)
+      (q3) edge[above] node{b} (q4)
+      (q3) edge[loop right] node{a} (q3)
+      (q5) edge[bend right, above] node{b} (q4)
+      (q5) edge[loop right] node{b} (q5);
+  \end{tikzpicture}
+  \caption{Exemple d'un automate après grignotage de \(ab\).}
+\end{figure}
+
+\begin{definition}[Grignotage d'un automate par un mot]
+  Soit \(M = (Q, I, F, \delta)\), un automate, le \emph{grignotage} de \(M\)
+  par un mot \(w\) sera l'automate~:
+  \begin{gather*}
+    Nibbling(M, w) = (Q, I', F', \delta), \\
+    I' = \bigcup_{i \in I} \delta(i, w) \land F' = \bigcup_{f \in F}
+    \delta^{-1}(f, w). \\
+  \end{gather*}
+\end{definition}
+
+\begin{lemma}[Premier lemme du grignotage]\label{lemma:grignotage}
+  Si un mot \(w\) est reconnu par \(Nibbling(M, v)\), alors \(v \cdot w \cdot
+  \overleftarrow{w}\) est reconnu par M.
+  \begin{align*}
+    \forall M \in NFA(\Sigma, \eta) \land \forall v \in \Sigma^* 
+    \land N = Nibbling(M, v) \land w \in L(N) \Longleftrightarrow v \cdot w
+    \cdot \overleftarrow{v} \in L(M).
+  \end{align*}
+\end{lemma}
+
+\begin{lemma}[Second lemme du grignotage]\label{lemma:grignotage2}
+  Soit un automate \(M \in NFA(\Sigma, \eta)\), et un mot \(w = u \cdot v
+  \cdot \overleftarrow{u} \in L(M)\), si~:
+  \begin{align*}
+  \exists (x, y, z) \in (\Sigma^*)^3 \colon Nibbling(M, y) = Nibbling(M, x)
+  \land u = x \cdot z \Longrightarrow (y \cdot z) \cdot v \cdot
+  \overleftarrow{(y \cdot z)} \in L(M).
+  \end{align*}
+\end{lemma}
+
+Il nous reste donc à présent à calculer le grignoté de tous les mots dits
+<< pertinents >>, puis à effectuer l'union non déterministe des automates
+ainsi obtenus.
+
+\vphantom{}
+
+Cependant, une question importante demeure~: quels sont les mots que l’on
+qualifie de pertinents~?
+
+\vphantom{}
+
+Une première intuition serait de considérer tous les fragments internes des
+mots du langage, autrement dit toutes les sous-parties situées entre le début
+et la fin, ce que l’on pourrait appeler, de manière imagée, \textit{la chair}
+du mot (par opposition au trognon).
+
+\vphantom{}
+
+Mais, cette approche soulève un problème~: le langage étant, en général,
+infini, il existe potentiellement une infinité de << chairs >>. Une telle
+démarche, si elle n’est pas restreinte, est alors incalculable en pratique.
+
+\begin{definition}[La chair d'un langage]
+  Le langage \(Flesh(L)\) (aussi noté \(Chair(L)\)) est construit à partir de
+  \(L\) en gardant, pour chaque mot de \(L\), un préfixe dont le miroir est
+  également un suffixe~:
+  \begin{align*}
+    Flesh(w) &= \{u \in \Sigma^* \mid \exists v \in \Sigma^* \land w = u
+    \cdot v \cdot \overleftarrow{u}\}, \\
+    Flesh(L) &= \bigcup_{w \in L} Flesh(w).
+  \end{align*}
+\end{definition}
+
+\begin{example}
+  \vspace{-\baselineskip}
+  \begin{align*}
+    L &= \{a, b, aa, aabcaa\}, \\
+    Flesh(L) &= \{\varepsilon, a, b, aa\}.
+  \end{align*}
+\end{example}
+
+Puisque l’automate reconnaissant le langage de départ est fini, notons \(n\)
+son nombre d’états. Si un mot \(u\) appartient à la chair d’un mot, et que sa
+longueur vérifie \(\lvert u \rvert \geq n\), alors la lecture de \(u\) force
+la réapparition d’au moins un état (par le \textit{principe des tiroirs}). Il
+en résulte l’existence d’un cycle dans l'automate de départ.
+
+\vphantom{}
+
+L’algorithme explore donc tous les mots \(w \in \Sigma^*\) en construisant
+successivement les automates grignotés \(N = Nibbling(M, w)\). Puisque le
+nombre d’automates à états fixes est fini, on aboutit forcément à une
+répétition~: il existe un mot plus court \(u\) tel que
+\begin{align*}
+N = Nibbling(M, u) \land \lvert u \rvert < \lvert w \rvert.
+\end{align*}
+
+À partir de ce moment, il n’est plus nécessaire << d’étendre >> \(w\), car
+tout mot préfixé par \(w\) aurait déjà été obtenu via un préfixe plus court.
+Cette condition garantit l’arrêt de l’algorithme et garantit que l’on ne
+construit qu’un nombre fini d’automates.
+
+\subsubsection{Formalisation de l'algorithme}
+
+Maintenant que nous avons l'idée de l'algorithme, nous verrons sa
+définition formelle~:
+\begin{minted}{text}
+nibbling(M):
+  N |\leftarrow| M
+  la |\leftarrow \{\,\texttt{M}\,\}|
+  lw |\leftarrow| queue_empty()
+  enqueue(lw, |\varepsilon|)
+  |\textbf{while}| lw |\!\(\neq \varnothing\)| |\textbf{do}|
+    |\textbf{for}| s |\textbf{in}| |\Sigma| |\textbf{do}|
+      w |\leftarrow| queue_dequeue(lw) |\!\cdot\!| s
+      A |\leftarrow \(Nibbling(\,\texttt{M},\; \texttt{w}\,)\)|
+      |\textbf{if}| A.I |\(\!\neq \varnothing\) \land| A.F |\(\!\neq \varnothing\) \land| A |\!\(\notin\)\!| la |\textbf{then}|
+        N |\leftarrow| N |\cup| A
+        la |\leftarrow \texttt{la} \cup \{\,\texttt{A}\,\}|
+        enqueue(lw, w)
+  |\textbf{return}| N
+\end{minted}
+
+\begin{remark}
+  On observe que l’algorithme effectue un parcours en largeur de
+  l’arborescence des mots. Cela garantit que tous les mots de longueur
+  strictement inférieure ont été explorés avant de commencer à << grignoter >>
+  ceux de longueur supérieure.
+\end{remark}
+
+\subsection{Preuve de notre algorithme}
+
+Pour prouver que notre algorithme est correct et construit bien l'automate
+du trognon d'un langage, nous allons d'abord montrer que tous mots reconnus
+par l'automate sont des mots appartenant au trognon du langage. Enfin, nous
+allons montrer que tous les mots du trognon d'un langage sont reconnu par
+l'automate.
+
+\subsubsection{Tous les mots reconnus sont des mots du trognon}
+
+\begin{proof}
+  Soit \(M \in NFA(\Sigma, \eta)\), \(N = \texttt{nibbling}(M)\) et un mot
+  \(w\) reconnu par l'automate \(N\). S'il est reconnu par \(N\), c'est qu'il
+  est reconnu par au moins un automate \(Nibbling(M, v)\) qui compose \(N\).
+  Or, par le lemme~\ref{lemma:grignotage}, alors \(v \cdot w \cdot
+  \overleftarrow{v}\) est reconnu par \(M\), et donc \(w\) fait partie de
+  \(Core(L(M))\).
+\end{proof}
+
+\subsubsection{Tous les mots du trognon sont reconnus}
+
+\begin{proof}
+  Pour prouver que tous les mots du trognon de \(M \in NFA(\Sigma, \eta)\)
+  sont bien reconnus par l'automate \(N = \texttt{nibbling}(M)\), nous allons
+  faire une preuve par récurrence sur la longueur de la chair d'un mot \(w =
+  u \cdot v \cdot \overleftarrow{u}\) du langage \(L(M)\)~:
+
+  \vphantom{}
+
+  \begin{itemize}
+    \item[\bullet~\textbf{Initialisation~:}] \(\lvert u \rvert = 0\)
+
+      Si \(\lvert u \rvert = 0 \Longleftrightarrow u = \varepsilon
+      \Longleftrightarrow v = w\).
+
+      \vphantom{}
+      
+      Ensuite, puisque nous faisons l'union de l'automate \(M\) dans notre
+      algorithme~:
+      \begin{align*}
+        w \in L(M) \Longleftrightarrow v \in L(M) \Longleftrightarrow v \in
+        L(\texttt{nibbling}(M)).
+      \end{align*}
+
+    \item[\bullet~\textbf{Hérédité~:}] \(\lvert u \rvert \geq 1\)
+      \begin{itemize}
+        \item[\circ] Si \(Nibbling(M, u)\) fait partie des automates dont on a
+          fait l'union dans notre algorithme, alors par le
+          lemme~\ref{lemma:grignotage}~:
+          \begin{align*}
+              v \in L(Nibbling(M, u)) \Longleftrightarrow v \in
+              L(\texttt{nibbling}(M)).
+          \end{align*}
+
+        \item[\circ] Sinon cela veut dire que~:
+          \begin{align*}
+            \exists (y, x, z) \in \Sigma^* \colon Nibbling(M, y) = 
+            Nibbling(M, x) \land u = x \cdot z \land \lvert y \rvert < \lvert x 
+            \rvert.
+          \end{align*}
+          On s'intéresse donc au mot \(w' =  (y \cdot z) \cdot v \cdot
+          \overleftarrow{(y \cdot z)}\) qui est dans \(L(M)\) par le
+          lemme~\ref{lemma:grignotage2}, or par hypothèse de récurrence
+          (\(\lvert y \cdot z \rvert < \lvert u \rvert\)) \(v \in
+          L(\texttt{nibbling}(M))\).
+      \end{itemize}
+  \end{itemize}
+\end{proof}
+
+\newpage
+\subsection{Pire cas de notre algorithme}
+
+Dans cette section, nous établirons une borne supérieure sur le nombre
+d’états de l’automate que notre algorithme peut engendrer. Cette estimation,
+distincte de la complexité du trognon d’un langage, nous offre néanmoins un
+plafond pour la complexité en états.
+
+\vphantom{}
+
+Dans notre pire cas, notre algorithme fera l'union de tous les automates
+distincts qu'ont les mêmes états et la même fonction de transition. La seule
+chose qui peut changer c'est l'ensemble des états initiaux et l'ensemble des
+états finaux.
+
+\vphantom{}
+
+On sait que ces deux ensembles sont des ensembles finis non vide à maximum
+\(n\) élément, il y a donc \(2^n - 1\) ensembles d'états initiaux et \(2^n -
+1\) ensembles d'états finaux. Ce qui nous donne \((2^n - 1)^2\) automate
+différents. Ensuite, puisqu'on fait l'union non déterministe de deux
+automates, l'automate résultant de notre algorithme aurait dans le pire des
+cas \(n(2^n - 1)^2\) états avec \(n\) le nombre d'états de l'automate de
+départ.
+
+\subsection{Conclusion}
+
+Pour conclure, nous venons de créer un algorithme qui prendre n'importe quel
+automate en entrée et qui calcule l'automate du trognon du langage de cette
+automate. De plus, notre algorithme, créer un automate dans le pire des cas à
+\(n(2^n - 1)^2\) états. Par conséquent, la complexité en états du grignotage
+d'un langage est d'au moins \(n(2^n - 1)^2\).
+
+\vphantom{}
+
+En exécutant cet algorithme, nous pouvons remarquer que les automates produit
+ne sont pas minimaux, ce qui nous laisse penser que cette complexité en états
+n'est pas atteinte. Néanmoins, par manque de temps, aucune preuve de cette
+hypothèse sera fourni.
+
+\vphantom{}
+
+Il serait donc intéressant d'étudier la complexité en état du grignotage plus
+en détail dans un autre article.

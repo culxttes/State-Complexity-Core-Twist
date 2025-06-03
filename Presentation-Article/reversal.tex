@@ -1,0 +1,164 @@
+% !chktex-file 8
+% !chktex-file 41
+
+\section{Renverser}
+
+\setframetitle{Renverser}
+
+\subsection{Préambule}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{La complexité exacte du renverser}
+    Nous allons montrer que l'opération de << renverser >> admet la complexité
+    exacte de \(n + 1\) en considérant que l'automate résultant ne doit avoir
+    qu'un seul état initial.
+  \end{block}
+\end{frame}
+
+\subsection{Preuve}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Représentation de l'automate \(A\)}
+    \centering
+    \begin{tikzpicture}[
+        scale=0.65,
+        transform shape
+      ]
+      \node[state, accepting, initial] (0) {\(0\)};
+      \node[state, accepting, right of=0] (1) {\(1\)};
+      \node[state, accepting, draw=none, right of=1] (2) {\(\cdots\)};
+      \node[state, accepting, right of=2] (3) {\(n - 2\)};
+      \node[state, accepting, right of=3] (4) {\(n - 1\)};
+
+      \draw
+      (0) edge[above] node{\(a\)} (1)
+      (1) edge[above] node{\(a\)} (2)
+      (2) edge[above] node{\(a\)} (3)
+      (3) edge[above] node{\(a\)} (4)
+      (4) edge[above, bend right] node{\(b\)} (0);
+    \end{tikzpicture}
+  \end{block}
+
+  \pause[]
+
+  \begin{block}{\(M \in NFA(\Sigma)\)}
+    Soit l'automate minimal \(M\) qui reconnait le miroir du langage de
+    l'automate \(A\).
+    % LTeX: enabled=false
+    \begin{gather*}
+      M = (Q, \{q_0\}, F, \delta)
+    \end{gather*}
+    % LTeX: enabled=true
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \setcounter{enumi}{1}
+  \begin{block}{
+      \raisebox{0.125\fontcharht\font`X}{%
+        \resizebox{!}{\fontcharht\font`X}{\usebeamertemplate{enumerate item}}%
+      }
+      Preuve
+    }
+    \(M\) doit nécessairement reconnaitre le mot vide, car l'automate \(A\)
+    reconnait lui-même le mot vide.
+
+    \begin{center}
+      \begin{tikzpicture}[
+          scale=0.7,
+          transform shape
+        ]
+        \node[state, accepting, initial] (0) {\(q_0\)};
+        \node[state, draw=none, right of=0] (1) {};
+
+        \draw (0) edge[dashed] node{} (1);
+      \end{tikzpicture}
+    \end{center}
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \setcounter{enumi}{2}
+  \begin{block}{
+      \raisebox{0.125\fontcharht\font`X}{%
+        \resizebox{!}{\fontcharht\font`X}{\usebeamertemplate{enumerate item}}%
+      }
+      Preuve
+    }
+    L'automate \(A\) reconnait \(a^{n - 1}b\). Ainsi, il existe des états
+    \(q_1, q_2, \ldots, q_n\).
+
+    \begin{center}
+      \begin{tikzpicture}[
+          scale=0.7,
+          transform shape
+        ]
+        \node[state, accepting, initial] (0) {\(q_0\)};
+        \node[state, right of=0] (1) {\(q_1\)};
+        \node[state, draw=none, right of=1] (2) {\(\cdots\)};
+        \node[state, right of=2] (3) {\(q_{n - 1}\)};
+        \node[state, accepting, right of=3] (4) {\(q_n\)};
+
+        \draw
+        (0) edge[above] node{\(b\)} (1)
+        (1) edge[above] node{\(a\)} (2)
+        (2) edge[above] node{\(a\)} (3)
+        (3) edge[above] node{\(a\)} (4);
+
+        \node[state, accepting, initial, below of=0] (0') {\(q_0\)};
+        \node[state, right of=0'] (1') {\(q_1\)};
+        \node[state, draw=none, right of=1'] (2') {\(\cdots\)};
+        \node[state, right of=2'] (3') {\(q_{n - 1}\)};
+
+        \draw
+        (0') edge[above] node{\(b\)} (1')
+        (1') edge[above] node{\(a\)} (2')
+        (2') edge[above] node{\(a\)} (3')
+        (3') edge[above, bend left] node{\(a\)} (0');
+      \end{tikzpicture}
+    \end{center}
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \setcounter{enumi}{3}
+  \begin{block}{
+      \raisebox{0.125\fontcharht\font`X}{%
+        \resizebox{!}{\fontcharht\font`X}{\usebeamertemplate{enumerate item}}%
+      }
+      Preuve
+    }
+    \(M\) doit obligatoirement reconnaitre le mot \(a\), mais pas le mot \(b
+    a^n\).
+
+    \begin{center}
+      \begin{tikzpicture}[
+          scale=0.7,
+          transform shape
+        ]
+        \node[state, accepting, initial] (0) {\(q_0\)};
+        \node[state, right of=0] (1) {\(q_1\)};
+        \node[state, draw=none, right of=1] (2) {\(\cdots\)};
+        \node[state, right of=2] (3) {\(q_{n - 1}\)};
+        \node[state, accepting, right of=3] (4) {\(q_n\)};
+
+        \draw
+        (0) edge[above] node{\(b\)} (1)
+        (1) edge[above] node{\(a\)} (2)
+        (2) edge[above] node{\(a\)} (3)
+        (3) edge[above] node{\(a\)} (4)
+        (0) edge[above, bend left] node{\(a\)} (4);
+      \end{tikzpicture}
+    \end{center}
+  \end{block}
+\end{frame}
+
+\subsection{Conclusion}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Conclusion}
+    Or, l'opération de renverser d'un langage rationnel à une complexité non
+    déterministe de \(n + 1\).\footnotemark{}
+  \end{block}
+  \footnotetext{\hyperlink{Holzer2003}{\cite{Holzer2003}}}
+\end{frame}

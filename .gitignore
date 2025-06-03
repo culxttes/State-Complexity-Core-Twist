@@ -1,0 +1,21 @@
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+*.synctex.gz
+*.synctex(busy)
+*.run.xml
+*.bcf
+*.bcf-SAVE-ERROR
+*.bbl-SAVE-ERROR
+*.blg
+*.bbl
+_minted-*
+_minted/
+
+# Private Style
+edify.sty

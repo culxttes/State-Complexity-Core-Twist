@@ -1,0 +1,50 @@
+% !chktex-file 8
+% !chktex-file 1
+
+% Document type
+\documentclass[french,twoside]{article}
+\usepackage{edify}
+
+\usetikzlibrary{automata}
+\usetikzlibrary{arrows}
+\usetikzlibrary{positioning}
+
+\title{Complexité en état d'opération sur des langages rationnels}
+\date{\today}
+\author{
+  Edouard
+  % LTeX: enabled=false
+  HADDAG
+  % LTeX: enabled=true
+}
+% LTeX: enabled=false
+\logo{logo-univ-rouen-normandie-noir.png}
+% LTeX: enabled=true
+\headerrf{Université de Rouen Normandie}
+\headerrs{Application Informatique}
+\abs{
+  Dans cet article, nous étudions deux transformations particulières de
+  langages rationnels~: le << trognon >> et le << langage permuté >>. Nous
+  définissons formellement ces deux constructions et proposons pour chacune un
+  algorithme permettant de calculer un automate non déterministe reconnaissant
+  le langage transformé. Nous démontrons la correction de ces algorithmes et
+  analysons leur complexité en nombre d’états dans le pire des cas.
+}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\include{introduction}
+\include{preliminaries}
+\include{core}
+\include{twist}
+\include{conclusion}
+
+\printbibliography
+
+\end{document}

@@ -1,0 +1,39 @@
+\section{Introduction}
+
+Cet article s'intéresse à la complexité en nombre d'états des automates
+associés à des langages rationnels soumis à des transformations spécifiques.
+Plus précisément, nous étudions deux opérations définies sur les langages
+rationnels : le << trognon >> et le << langage permuté >>.
+
+\vphantom{}
+
+La première transformation, appelée << trognon >>, consiste à retirer, dans
+chaque mot du langage de départ, un préfixe dont le miroir est également un
+suffixe. Le mot central ainsi isolé constitue le << trognon >> du mot. Nous
+proposons un algorithme, que nous appelons algorithme de << grignotage >>,
+permettant, à partir d’un automate non déterministe reconnaissant un langage
+rationnel donné, de construire un automate reconnaissant le trognon de ce
+langage. Nous détaillons le principe de l’algorithme, formalisons sa
+construction, en prouvons la correction et analysons sa complexité dans le
+pire des cas.
+
+\vphantom{}
+
+La seconde transformation, appelée << langage permuté >>, consiste à permuter
+toutes les paires de lettres consécutives situées à des positions paires et
+impaires dans les mots du langage (positions \(2k\) et \(2k + 1\)). Pour cette
+transformation également, nous construisons un algorithme, que nous nommons
+algorithme de << twistage >>, qui transforme un automate reconnaissant le
+langage de départ en un automate reconnaissant le langage permuté. Nous
+décrivons le fonctionnement de cet algorithme, en démontrons la validité et
+étudions sa complexité.
+
+\vphantom{}
+
+L’objectif principal de ce travail est d’évaluer l’impact de ces opérations
+sur la taille des automates résultants, en particulier dans le cadre non
+déterministe. Pour chaque transformation, nous établissons des bornes
+supérieures sur le nombre d’états des automates produits, ce qui permet
+d’estimer la complexité opérationnelle de ces constructions. En conclusion,
+nous proposons des pistes pour des travaux futurs visant à affiner ces bornes
+ou à déterminer leur optimalité.

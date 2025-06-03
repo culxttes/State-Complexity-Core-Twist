@@ -1,0 +1,175 @@
+% !chktex-file 8
+
+% LTeX: enabled=false
+
+\documentclass[14pt,aspectratio=169,table,french]{beamer}
+\usepackage{bxdpx-beamer}
+\usepackage[french]{babel}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{bookmark}
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+\usepackage{fontspec}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{newtxtext}
+\usepackage{amsmath}
+\usepackage{breqn}
+\usepackage{silence}
+\usepackage{stmaryrd}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{minted}
+\usepackage{xcolor}
+\usepackage{csquotes}
+
+\usetikzlibrary{arrows, arrows.meta}
+\usetikzlibrary{automata}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes.geometric, shapes.misc}
+\usetikzlibrary{math}
+\usetikzlibrary{calc}
+\usetikzlibrary{fit}
+
+\WarningFilter{latexfont}{Font shape}
+
+\newcommand{\myframetitle}{}
+\newcommand{\setframetitle}[1]{\renewcommand{\myframetitle}{#1}}
+
+\tikzset{
+  ->,
+  >=stealth',
+  node distance=3cm,
+  every state/.style={
+    thick,
+    rounded rectangle
+  },
+  initial text=\( \),
+}
+
+% Light gray background for code blocks
+\definecolor{bgcolor}{HTML}{F0F0F0}
+
+% Gray for function in code blocks
+\definecolor{mgray}{HTML}{666666}
+
+% Minted configuration
+\setminted{
+  linenos,              % Enable line numbers
+  numbersep=8pt,        % Space between line numbers and code
+  xleftmargin=2em,      % Add margin so numbers stay inside the block
+  bgcolor=bgcolor,      % Set the background color of the code block
+  style=algol_nu,       % Disable syntax highlighting (use plain black text)
+  frame=none,           % Add a frame around the code block
+  framesep=5pt,         % Space between the frame and the code
+  breaklines=true,      % Automatically break long lines
+  escapeinside=||       % Escape to LaTeX between the two characters specified
+}
+
+\DeclareMathOperator*{\NFA}{NFA}
+\DeclareMathOperator*{\DFA}{DFA}
+\DeclareMathOperator*{\RAT}{Rat}
+\DeclareMathOperator*{\ndet}{ndet}
+\DeclareMathOperator*{\nsdet}{(n)det} % chktex 36
+
+\setbeamertemplate{theorems}[numbered]
+
+\usetheme{Boadilla}
+\usefonttheme{professionalfonts}
+
+\DeclareFontFamily{OMX}{mlmex}{}
+\DeclareFontShape{OMX}{mlmex}{m}{n}{<->mlmex10}{}
+\renewcommand{\familydefault}{\sfdefault}
+\renewcommand{\kanjifamilydefault}{\gtdefault}
+
+\usefonttheme{structurebold}
+
+\setbeamerfont{alerted text}{series=\bfseries}
+\setbeamerfont{section in toc}{series=\mdseries}
+\setbeamerfont{frametitle}{size=\Large}
+\setbeamerfont{title}{size=\LARGE}
+\setbeamerfont{date}{size=\small}
+
+\definecolor{UniBlue}{RGB}{0,150,200}
+\definecolor{AlertOrange}{RGB}{255,76,0}
+\definecolor{AlmostBlack}{RGB}{38,38,38}
+\setbeamercolor{normal text}{fg=AlmostBlack}
+\setbeamercolor{structure}{fg=UniBlue}
+\setbeamercolor{block title}{fg=UniBlue!50!black}
+\setbeamercolor{alerted text}{fg=AlertOrange}
+\mode<beamer>{
+  \definecolor{BackGroundGray}{RGB}{254,254,254}
+  \setbeamercolor{background canvas}{bg=BackGroundGray}
+}
+
+\setbeamertemplate{blocks}[rounded]
+\useinnertheme{circles}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{frametitle continuation}{}
+
+\setbeamertemplate{title page}{
+  \vspace{2.0em}
+  {\usebeamerfont{title} \usebeamercolor[fg]{title} \inserttitle~\par}
+  {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle~\par}
+  \vspace{2.5em}
+  \begin{minipage}{0.48\textwidth}
+    \usebeamercolor[fg]{titlegraphic}\inserttitlegraphic{}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \begin{flushright}
+      \usebeamerfont{author}\insertauthor\par
+      \usebeamerfont{institute}\insertinstitute~\par
+      \vspace{3em}
+      \usebeamerfont{date}\insertdate\par
+    \end{flushright}
+  \end{minipage}
+}
+
+\newcounter{firstsection}
+\setcounter{firstsection}{1}
+
+\AtBeginSection[]{
+  \ifnum\value{firstsection}=1
+  \setcounter{firstsection}{0}
+  \begin{frame}
+    \tableofcontents[hideallsubsections]
+  \end{frame}
+  \else
+  \begin{frame}
+    \centering
+    \usebeamerfont{title}
+    \usebeamercolor[fg]{title}
+    \insertsection{}
+  \end{frame}
+  \fi
+}
+
+% LTeX: enabled=true
+
+\title{Complexité en état opérationnel de langage rationnel}
+\subtitle{
+  Master 1 - ITA~: Application Informatique \\ Encadré par Pascal Caron
+}
+\author{Edouard HADDAG}
+\institute{Université de Rouen Normandie}
+\date{\today}
+\titlegraphic{
+  \includegraphics[scale=0.3]{
+    resources/logo-univ-rouen-normandie-noir.png
+  }
+}
+
+\begin{document}
+
+\maketitle
+
+\include{introduction}
+\include{core}
+\include{twist}
+\include{conclusion}
+
+\end{document}

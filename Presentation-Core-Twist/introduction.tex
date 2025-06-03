@@ -1,0 +1,191 @@
+% !chktex-file 8
+
+\section{Introduction}
+
+\subsection{Prémisse}
+
+\subsubsection{Langage}
+
+\setframetitle{Langage}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Langage]
+    Un << langage >> \(L\) est un ensemble de mots sur un alphabet \(\Sigma\).
+  \end{definition}
+
+  \pause[]
+
+  \begin{example}
+    \vspace{-1.5\topsep}
+    \begin{gather*}
+      L = \{\varepsilon, aa, bb, abab\}
+    \end{gather*}
+  \end{example}
+
+  \pause[]
+
+  \begin{definition}[Le langage de l'ensemble des mots]
+    L'ensemble des mots possible sur l'alphabet \(\Sigma\) sera noté
+    \(\Sigma^*\).
+  \end{definition}
+\end{frame}
+
+\subsubsection{Automate}
+
+\setframetitle{Automate}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Automate]
+    \(M = (Q, I, F, \delta)\) avec \(Q = \{q_1, q_2, q_3\}\), \(I = \{q_1\}\)
+    et \(F = \{q_3\}\).
+    \begin{center}
+      \begin{tikzpicture}
+        \node[state, initial] (q1) {\(q_1\)};
+        \node[state, right of=q1] (q2) {\(q_2\)};
+        \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+
+        \draw
+        (q1) edge[loop above] node{\(a\)} (q1)
+        (q1) edge[above] node{\(b\)} (q2)
+        (q1) edge[bend right, below] node{\(a\)} (q3)
+        (q2) edge[above] node{\(a,b\)} (q3)
+        (q3) edge[bend right=50, above] node{\(b\)} (q2);
+      \end{tikzpicture}
+    \end{center}
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[L'acceptation d'un mot]
+    Le mot \(aba\) est << accepté >>~:
+    \begin{center}
+      \begin{tikzpicture}
+        \node[state, initial] (q1) {\(q_1\)};
+        \node[state, right of=q1] (q2) {\(q_2\)};
+        \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+
+        \only<1> {\draw (q1) edge[loop above] node{\(a\)} (q1);}
+        \only<1-2> {\draw (q1) edge[above] node{\(b\)} (q2);}
+        \only<1-3> {\draw (q2) edge[above] node{\(a,b\)} (q3);}
+
+        \only<2-> {\draw (q1) edge[loop above, red] node{\(a\)} (q1);}
+        \only<3-> {\draw (q1) edge[above, red] node{\(b\)} (q2);}
+        \only<4-> {\draw (q2) edge[above, red] node{\(a,b\)} (q3);}
+
+        \draw
+        (q3) edge[bend right=50, above] node{\(b\)} (q2)
+        (q1) edge[bend right, below] node{\(a\)} (q3);
+      \end{tikzpicture}
+    \end{center}
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Automate minimal]
+    L'automate \(M_1\) est << minimal >> du langage \(L = \{ab\}\)~:
+
+    \begin{minipage}{0.47\textwidth}
+      \centering
+      \begin{tikzpicture}[node distance=2.5cm]
+        \node[state, initial] (0) {\(0\)};
+        \node[state, right of=0] (1) {\(1\)};
+        \node[state, accepting, below of=1] (2) {\(2\)};
+
+        \node[above =.75cm of $(0)!0.5!(1)$, align=center] {\(M_1\)};
+
+        \draw
+        (0) edge[above] node{\(a\)} (1)
+        (1) edge[right] node{\(b\)} (2);
+      \end{tikzpicture}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.47\textwidth}
+      \centering
+      \begin{tikzpicture}[node distance=2.5cm]
+        \node[state, initial] (0) {\(0\)};
+        \node[state, right of=0] (1) {\(1\)};
+        \node[state, accepting, below of=1] (2) {\(2\)};
+        \node[state, left of=2] (3) {\(3\)};
+
+        \node[above =.75cm of $(0)!0.5!(1)$, align=center] {\(M_2\)};
+
+        \draw
+        (0) edge[above] node{\(a\)} (1)
+        (1) edge[right] node{\(b\)} (2)
+        (0) edge[left] node{\(a\)} (3);
+      \end{tikzpicture}
+    \end{minipage}
+  \end{definition}
+\end{frame}
+
+\subsubsection{Lien entre les langages et les automates}
+
+\setframetitle{Lien entre les langages et les automates}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Langage rationnel]
+    Les langages << rationnels >> sont les langages reconnaissables par au
+    moins un automate.
+  \end{definition}
+\end{frame}
+
+\subsubsection{Complexité en état}
+
+\setframetitle{Complexité en état}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}
+    La << complexité en état >> est une mesure d'un \textbf{langage}, elle est
+    définie comme le nombre d'états de l'automate minimal du langage. Qui sera
+    noté \(\mathcal{C}(L)\).
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{example}[%
+      \only<1>{Définition d'une famille}%
+      \only<2>{\(\mathcal{C}(A_2) = 2 + 2\)}%
+    ]
+    \centering
+    \vspace{-1.5\topsep}
+    \begin{gather*}
+      A_n = \Sigma^* \cdot a \cdot \Sigma^n
+    \end{gather*}
+    \vspace{-2.25\topsep}
+
+    \onslide<2-> {
+      \begin{tikzpicture}[node distance=2.5cm, scale=0.7,transform shape]
+        \node[state, initial] (0') {\(0\)};
+        \node[state, right of=0'] (1') {\(1\)};
+        \node[state, right of=1'] (2') {\(2\)};
+        \node[state, accepting, right of=2'] (3') {\(3\)};
+
+        \draw
+        (0') edge[above] node{\(a\)} (1')
+        (1') edge[above] node{\(a,b\)} (2')
+        (2') edge[above] node{\(a,b\)} (3')
+        (0') edge[loop above] node{\(a,b\)} (0');
+      \end{tikzpicture}
+    }
+  \end{example}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Complexité en état opérationniel]
+    La fonction \(f\) à une complexité \(g(n)\) si~:
+    \begin{center}
+      \begin{tikzpicture}[transform shape, scale=0.8]
+        \node[draw, ellipse, minimum width=1.5cm] (A) at (-3,0) {\(A\)};
+        \node[draw, rectangle, minimum width=2cm, minimum height=1cm]
+        (F) at (0,0) {\(f\)};
+        \node[draw, ellipse, minimum width=1.5cm] (C) at (3,0) {\(C\)};
+
+        \node[left =0.25cm of A] {\(n\)};
+        \node[right =0.25cm of C] {\(k \leq g(n)\)};
+
+        \draw (A) -- (F);
+        \draw (F) -- (C);
+      \end{tikzpicture}
+    \end{center}
+  \end{definition}
+\end{frame}

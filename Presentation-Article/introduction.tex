@@ -1,0 +1,488 @@
+% !chktex-file 8
+
+\subsection{Présentation du papier}
+
+\setframetitle{Présentation du papier}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Présentation du papier}
+    % LTex: language=en
+    \textit{State complexity of some operations on binary regular
+    languages}\footnotemark{}
+    % LTex: language=fr
+
+    \vphantom{}
+
+    Par \textbf{Galina Jirásková}, publié dans
+    % LTex: language=en
+    \textit{\underline{Theoretical Computer Science, 330.2}}
+    % LTex: language=fr%
+    en 2005
+  \end{block}
+  \footnotetext{\hyperlink{JIRASKOVA2005287}{\cite{JIRASKOVA2005287}}}
+\end{frame}
+
+\section{Introduction}
+
+\subsection{Prémisse}
+
+\subsubsection{Alphabet et Mot}
+
+\setframetitle{Alphabet et Mot}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Alphabet]
+    Un << alphabet >> \(\Sigma\) est un ensemble fini non-vide de symboles.
+  \end{definition}
+
+  \pause[]
+
+  \begin{definition}[Mot]
+    Un << mot >> \(w\) est une suite finie de symboles sur un alphabet
+    \(\Sigma\). La suite vide de symbole sera notée par \(\varepsilon\).
+  \end{definition}
+
+  \pause[]
+
+  \begin{example}
+    \centering
+    \vspace{-1.5\topsep}
+    \begin{gather*}
+      \Sigma = \{a, b\} \\
+      w = abba
+    \end{gather*}
+  \end{example}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Concaténation d'un mot]
+    L'opération \(\cdot\) désigne la << concaténation >> de deux mots.
+  \end{definition}
+
+  \pause[]
+
+  \begin{example}
+    \centering
+    \vspace{-1.5\topsep}
+    \begin{gather*}
+      u = aa \text{ et } v = bb \\
+      w = u \cdot v = aabb
+    \end{gather*}
+  \end{example}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Le miroir d'un mot]
+    On notera \(\overleftarrow w\), le << miroir >> du mot \(w\).
+  \end{definition}
+
+  \pause[]
+
+  \begin{example}
+    \vspace{-1.5\topsep}
+    \begin{align*}
+      u &= abcd\\
+      \overleftarrow u &= dcba
+    \end{align*}
+  \end{example}
+\end{frame}
+
+\subsubsection{Langage}
+
+\setframetitle{Langage}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Langage]
+    Un << langage >> \(L\) est un ensemble de mots sur un alphabet \(\Sigma\).
+  \end{definition}
+
+  \pause[]
+
+  \begin{example}
+    \vspace{-1.5\topsep}
+    \begin{gather*}
+      L = \{\varepsilon, aa, bb, abab\}
+    \end{gather*}
+  \end{example}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[La concaténation]
+    La << concaténation >> est définie grâce à la concaténation des mots~:
+
+    \begin{alignat*}{2}
+      &L_1 &&= \{a, b\} \\
+      &L_2 &&= \{c, d\} \\
+      &L_1 \cdot L_2 &&= \{ac, ad, bc, bd\} \\
+    \end{alignat*}
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[La copie n-ième]
+    On définit la << copie n-ième >> d'un langage \(L\) noté \(L^n\)~:
+
+    \begin{alignat*}{2}
+      &L_1 &&= \{a, b\} \\
+      &L_1^2 &&= \{aa, ab, bb, ba\}
+    \end{alignat*}
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[L'étoile (de \textit{Kleene}) d'un langage]
+    On peut définir << l'étoile >> d'un langage notée \(L^*\)~:
+    % LTeX: enabled=false
+    \begin{align*}
+      L^* = \bigcup_{i \geq 0} L^i
+    \end{align*}
+    % LTeX: enabled=true
+  \end{definition}
+
+  \pause[]
+
+  \begin{example}
+    \vspace{-1.5\topsep}
+    \begin{align*}
+      &L = \{a, b\} \\
+      &L^* = \{\varepsilon, a, b, aa, ab, \ldots\}
+    \end{align*}
+  \end{example}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Le langage de l'ensemble des mots]
+    L'ensemble des mots possible sur l'alphabet \(\Sigma\) sera noté
+    \(\Sigma^*\).
+  \end{definition}
+
+  \pause[]
+
+  \begin{definition}[Le langage miroir]
+    On pourra noter \(\overleftarrow L\), << le langage miroir >> de \(L\), qui
+    sera le langage des miroirs des mots de \(L\)~:
+    \begin{align*}
+      \overleftarrow L = \{\overleftarrow w ~|~ w \in L\}
+    \end{align*}
+  \end{definition}
+
+  \pause[]
+
+  \begin{block}{Autres opérations}
+    Les langages étant des ensembles, leurs opérations peuvent être étendues
+    aux langages.
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Les langages rationnels]
+    L'ensemble des << langages rationnels >> sur \(\Sigma\), noté
+    \(\RAT(\Sigma^*)\), est le plus petit ensemble de langages sur \(\Sigma\)
+    qui vérifie~:
+
+    \vphantom{}
+
+    \begin{itemize}
+      \item \(\RAT(\Sigma^*)\) contient \(\varnothing\) et \(\{a\}\) avec \(a
+        \in \Sigma\).
+      \item \(\RAT(\Sigma^*)\) est fermé pour l'union, la concaténation et
+        l'étoile.
+    \end{itemize}
+  \end{definition}
+\end{frame}
+
+\subsubsection{Automate}
+
+\setframetitle{Automate}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Automate]
+    \(M = (Q, I, F, \delta)\) avec \(Q = \{q_1, q_2, q_3\}\), \(I = \{q_1\}\) et
+    \(F = \{q_3\}\).
+    \begin{center}
+      \begin{tikzpicture}
+        \node[state, initial] (q1) {\(q_1\)};
+        \node[state, right of=q1] (q2) {\(q_2\)};
+        \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+
+        \draw
+        (q1) edge[loop above] node{\(a\)} (q1)
+        (q1) edge[above] node{\(b\)} (q2)
+        (q1) edge[bend right, below] node{\(a\)} (q3)
+        (q2) edge[above] node{\(a,b\)} (q3)
+        (q3) edge[bend right=50, above] node{\(b\)} (q2);
+      \end{tikzpicture}
+    \end{center}
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[L'acceptation d'un mot]
+    Le mot \(aba\) est << accepté >>~:
+    \begin{center}
+      \begin{tikzpicture}
+        \node[state, initial] (q1) {\(q_1\)};
+        \node[state, right of=q1] (q2) {\(q_2\)};
+        \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+
+        \only<1> {\draw (q1) edge[loop above] node{\(a\)} (q1);}
+        \only<1-2> {\draw (q1) edge[above] node{\(b\)} (q2);}
+        \only<1-3> {\draw (q2) edge[above] node{\(a,b\)} (q3);}
+
+        \only<2-> {\draw (q1) edge[loop above, red] node{\(a\)} (q1);}
+        \only<3-> {\draw (q1) edge[above, red] node{\(b\)} (q2);}
+        \only<4-> {\draw (q2) edge[above, red] node{\(a,b\)} (q3);}
+
+        \draw
+        (q3) edge[bend right=50, above] node{\(b\)} (q2)
+        (q1) edge[bend right, below] node{\(a\)} (q3);
+      \end{tikzpicture}
+    \end{center}
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Automate déterministe]
+    On parlera d'automate << déterministe >> quand~:
+    \begin{center}
+      \only<1> {
+        \begin{tikzpicture}
+          \node[state, initial] (q1) {\(q_1\)};
+          \node[state, right of=q1] (q2) {\(q_2\)};
+          \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+
+          \draw
+          (q1) edge[loop above] node{\(a\)} (q1)
+          (q1) edge[above] node{\(b\)} (q2)
+          (q2) edge[above] node{\(a,b\)} (q3)
+          (q3) edge[bend right=50, above] node{\(b\)} (q2)
+          (q3) edge[bend left, below] node{\(a\)} (q1);
+        \end{tikzpicture}
+      }
+
+      \only<2> {
+        \begin{tikzpicture}[every initial by arrow/.style={red}]
+          \node[state, initial] (q1) {\(q_1\)};
+          \node[state, right of=q1] (q2) {\(q_2\)};
+          \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+
+          \draw
+          (q1) edge[loop above] node{\(a\)} (q1)
+          (q1) edge[above] node{\(b\)} (q2)
+          (q2) edge[above] node{\(a,b\)} (q3)
+          (q3) edge[bend right=50, above] node{\(b\)} (q2)
+          (q3) edge[bend left, below] node{\(a\)} (q1);
+        \end{tikzpicture}
+      }
+
+      \only<3> {
+        \begin{tikzpicture}[every initial by arrow/.style={gray}]
+          \node[state, initial] (q1) {\(q_1\)};
+          \node[state, right of=q1, gray] (q2) {\(q_2\)};
+          \node[state, accepting, right of=q2, gray] (q3) {\(q_3\)};
+
+          \draw
+          (q1) edge[loop above] node{\(a\)} (q1)
+          (q1) edge[above] node{\(b\)} (q2)
+          (q2) edge[above, gray] node{\(a,b\)} (q3)
+          (q3) edge[bend right=50, above, gray] node{\(b\)} (q2)
+          (q3) edge[bend left, below, gray] node{\(a\)} (q1);
+        \end{tikzpicture}
+      }
+
+      \only<4> {
+        \begin{tikzpicture}[every initial by arrow/.style={gray}]
+          \node[state, initial, gray] (q1) {\(q_1\)};
+          \node[state, right of=q1] (q2) {\(q_2\)};
+          \node[state, accepting, right of=q2, gray] (q3) {\(q_3\)};
+
+          \draw
+          (q1) edge[loop above, gray] node{\(a\)} (q1)
+          (q1) edge[above, gray] node{\(b\)} (q2)
+          (q2) edge[above] node{\(a,b\)} (q3)
+          (q3) edge[bend right=50, above, gray] node{\(b\)} (q2)
+          (q3) edge[bend left, below, gray] node{\(a\)} (q1);
+        \end{tikzpicture}
+      }
+
+      \only<5> {
+        \begin{tikzpicture}[every initial by arrow/.style={gray}]
+          \node[state, initial, gray] (q1) {\(q_1\)};
+          \node[state, right of=q1, gray] (q2) {\(q_2\)};
+          \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+
+          \draw
+          (q1) edge[loop above, gray] node{\(a\)} (q1)
+          (q1) edge[above, gray] node{\(b\)} (q2)
+          (q2) edge[above, gray] node{\(a,b\)} (q3)
+          (q3) edge[bend right=50, above] node{\(b\)} (q2)
+          (q3) edge[bend left, below] node{\(a\)} (q1);
+        \end{tikzpicture}
+      }
+    \end{center}
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Automate minimal]
+    L'automate \(M_1\) est << minimal >> du langage \(L = \{ab\}\)~:
+
+    \begin{minipage}{0.47\textwidth}
+      \centering
+      \begin{tikzpicture}[node distance=2.5cm]
+        \node[state, initial] (0) {\(0\)};
+        \node[state, right of=0] (1) {\(1\)};
+        \node[state, accepting, below of=1] (2) {\(2\)};
+
+        \node[above =.75cm of $(0)!0.5!(1)$, align=center] {\(M_1\)};
+
+        \draw
+        (0) edge[above] node{\(a\)} (1)
+        (1) edge[right] node{\(b\)} (2);
+      \end{tikzpicture}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.47\textwidth}
+      \centering
+      \begin{tikzpicture}[node distance=2.5cm]
+        \node[state, initial] (0) {\(0\)};
+        \node[state, right of=0] (1) {\(1\)};
+        \node[state, accepting, below of=1] (2) {\(2\)};
+        \node[state, left of=2] (3) {\(3\)};
+
+        \node[above =.75cm of $(0)!0.5!(1)$, align=center] {\(M_2\)};
+
+        \draw
+        (0) edge[above] node{\(a\)} (1)
+        (1) edge[right] node{\(b\)} (2)
+        (0) edge[left] node{\(a\)} (3);
+      \end{tikzpicture}
+    \end{minipage}
+  \end{definition}
+\end{frame}
+
+\subsubsection{Lien entre les langages et les automates}
+
+\setframetitle{Lien entre les langages et les automates}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[L'ensemble des langages reconnaisable]
+    On définira l'ensemble des langages de \(\Sigma^*\) << reconnaissable >> par
+    au moins un automate par \(\REC(\Sigma^*)\).
+  \end{definition}
+
+  \pause[]
+
+  \begin{block}{Théorème de \textit{Kleene}}
+    L'informaticien \textit{Stephen C. Kleene} a montré en 1956 que~:
+    % LTeX: enabled=false
+    \begin{align*}
+      \REC(\Sigma^*) = \RAT(\Sigma^*)
+    \end{align*}
+    % LTeX: enabled=true
+  \end{block}
+\end{frame}
+
+\subsubsection{Complexité en état}
+
+\setframetitle{Complexité en état}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}
+    La << complexité en état >> est une mesure d'un \textbf{langage}, elle est
+    définie comme le nombre d'états de l'automate minimal du langage~:
+
+    \vphantom{}
+
+    \begin{itemize}
+      \item Complexité en état déterministe (qu'on notera \(C_{\det}\)).
+      \item Complexité en état non déterministe (qu'on notera \(C_{\ndet}\)).
+    \end{itemize}
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{example}[%
+      \only<1>{Définition d'une famille}%
+      \only<2>{\(C_{\ndet}(A_2) = 2 + 2\)}%
+      \only<3>{\(C_{\det}(A_2) = 2^{2 + 1}\)}%
+    ]
+    \centering
+    \vspace{-1.5\topsep}
+    \begin{gather*}
+      A_n = \Sigma^* \cdot a \cdot \Sigma^n
+    \end{gather*}
+    \vspace{-2.25\topsep}
+
+    \onslide<2-> {
+      \begin{tikzpicture}[node distance=2.5cm, scale=0.7,transform shape]
+        \node[state, initial] (0') {\(0\)};
+        \node[state, right of=0'] (1') {\(1\)};
+        \node[state, below of=1'] (2') {\(2\)};
+        \node[state, accepting, left of=2'] (3') {\(3\)};
+
+        \draw
+        (0') edge[above] node{\(a\)} (1')
+        (1') edge[right] node{\(a,b\)} (2')
+        (2') edge[above] node{\(a,b\)} (3')
+        (0') edge[loop above] node{\(a,b\)} (0');
+
+        \onslide<3> {
+          \node[state, initial, right =5cm of 1'] (0) {\(0\)};
+          \node[state, right of=0] (1) {\(1\)};
+          \node[state, right of=1] (2) {\(2\)};
+          \node[state, right of=2] (3) {\(3\)};
+          \node[state, accepting, below of=3] (4) {\(4\)};
+          \node[state, accepting, left of=4] (5) {\(5\)};
+          \node[state, accepting, left of=5] (6) {\(6\)};
+          \node[state, accepting, left of=6] (7) {\(7\)};
+
+          \draw
+          (0) edge[loop above] node{\(b\)} (0)
+          (3) edge[loop above] node{\(a\)} (3)
+
+          (0) edge[above] node{\(a\)} (1)
+          (1) edge[above] node{\(a\)} (2)
+          (2) edge[above] node{\(a\)} (3)
+          (3) edge[right] node{\(b\)} (4)
+          (4) edge[above] node{\(a\)} (5)
+          (5) edge[above] node{\(b\)} (6)
+          (6) edge[above] node{\(b\)} (7)
+
+          (1) edge[left] node{\(b\)} (6)
+          (2) edge[left] node{\(b\)} (4)
+          (4) edge[below, bend left] node{\(b\)} (7)
+          (5) edge[left] node{\(a\)} (2)
+          (6) edge[above, bend right] node{\(a\)} (5)
+          (7) edge[left] node{\(a\)} (1)
+          (7) edge[left] node{\(b\)} (0);
+        }
+      \end{tikzpicture}
+    }
+  \end{example}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[Complexité en état opérationnielle]
+    La fonction \(f\) à une complexité \(g(n, m)\) si~:
+    \begin{center}
+      \begin{tikzpicture}[transform shape, scale=0.8]
+        \node[draw, ellipse, minimum width=1.5cm] (A) at (-2,2) {\(A\)};
+        \node[draw, ellipse, minimum width=1.5cm] (B) at (2,2) {\(B\)};
+        \node[draw, rectangle, minimum width=2cm, minimum height=1cm]
+        (F) at (0,0) {\(f\)};
+        \node[draw, ellipse, minimum width=1.5cm] (C) at (0,-2) {\(C\)};
+
+        \node[left =0.25cm of A] {\(n\)};
+        \node[right =0.25cm of B] {\(m\)};
+        \node[below =0.25cm of C] {\(k \leq g(n, m)\)};
+
+        \coordinate (center) at ($(F.north west)!0.5!(F.north east)$);
+
+        \draw (A) -- (-0.5,2) -- ([shift={(-0.5cm,0cm)}] center);
+        \draw (B) -- (0.5,2) -- ([shift={(0.5cm,0cm)}] center);
+        \draw (F) -- (C);
+      \end{tikzpicture}
+    \end{center}
+  \end{definition}
+\end{frame}

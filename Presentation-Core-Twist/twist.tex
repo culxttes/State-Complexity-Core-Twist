@@ -1,0 +1,310 @@
+\section{Langage permuté}
+
+\subsection{Définition}
+
+\setframetitle{Définition}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[\(Twist(L)\)]
+    Le langage \(Twist(L)\) sera défini comment l'ensemble des mots du
+    langage de \(L\) tel qu'on aura échangé les lettres aux indices \(2k\) et
+    \(2k + 1\) avec \(k\in \mathbb{N}\).
+  \end{definition}
+
+  \pause[]
+
+  \begin{example}
+    \vspace*{-\baselineskip}
+    \begin{align*}
+      L &= \{\varepsilon, a, ab, abcd\} \\
+      Twist(L) &= \{\varepsilon, a, ba, badc\}
+    \end{align*}
+  \end{example}
+\end{frame}
+
+\subsection{Algorithme twister}
+
+\setframetitle{Algorithme twister}
+
+\begin{frame}{\myframetitle}
+  \begin{example}[Soit l'automate \(M\) suivant]
+    \centering
+    \begin{tikzpicture}
+      \tikzset{
+        ->,
+        >=stealth',
+        node distance=2.5cm,
+        every state/.style={thick},
+        initial text=$ $,
+      }
+      \node[state, initial] (q1) {\(1\)};
+      \node[state, right of=q1] (q2) {\(2\)};
+      \node[state, accepting, right of=q2] (q3) {\(3\)};
+      \node[state, above right of=q3] (q4) {\(4\)};
+      \node[state, right of=q4] (q5) {\(5\)};
+      \node[state, accepting, right of=q5] (q6) {\(6\)};
+      \node[state, right of=q3] (q7) {\(7\)};
+      \node[state, accepting, right of=q7] (q8) {\(8\)};
+      \node[state, right of=q8] (q9) {\(9\)};
+      \node[state, accepting, below right of=q3] (q10) {\(10\)};
+      \node[state, right of=q10] (q11) {\(11\)};
+      \node[state, right of=q11] (q12) {\(12\)};
+
+      \only<1> {
+        \draw
+          (q1) edge[above] node[blue]{\(b\)} (q2)
+          (q2) edge[above] node[red]{\(a\)} (q3)
+          (q3) edge[above] node[blue]{\(b\)} (q4)
+          (q4) edge[above] node[red]{\(a\)} (q5)
+          (q5) edge[above] node[blue]{\(b\)} (q6)
+          (q3) edge[above] node[blue]{\(a\)} (q7)
+          (q7) edge[above] node[red]{\(b\)} (q8)
+          (q8) edge[above] node[blue]{\(b\)} (q9)
+          (q3) edge[above] node[blue]{\(b\)} (q10)
+          (q10) edge[above] node[red]{\(b\)} (q11)
+          (q11) edge[above] node[blue]{\(a\)} (q12);
+      }
+      \only<2> {
+        \draw
+          (q1) edge[above] node[red]{\(a\)} (q2)
+          (q2) edge[above] node[blue]{\(b\)} (q3)
+          (q3) edge[above] node[red]{\(a\)} (q4)
+          (q4) edge[above] node[blue]{\(b\)} (q5)
+          (q5) edge[above] node[blue]{\(b\)} (q6)
+          (q3) edge[above] node[red]{\(b\)} (q7)
+          (q7) edge[above] node[blue]{\(a\)} (q8)
+          (q8) edge[above] node[blue]{\(b\)} (q9)
+          (q3) edge[above] node[red]{\(b\)} (q10)
+          (q10) edge[above] node[blue]{\(b\)} (q11)
+          (q11) edge[above] node[blue]{\(a\)} (q12);
+      }
+    \end{tikzpicture}
+  \end{example}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{example}[Soit l'automate \(N\) suivant]
+    \centering
+    \only<1-2> {
+      \begin{tikzpicture}
+        \tikzset{
+          ->,
+          >=stealth',
+          node distance=2.25cm,
+          every state/.style={
+            thick,
+            inner sep = 0pt,
+            minimum size = 0.75cm,
+          },
+          initial text=$ $,
+        }
+        \node[state, initial] (q1) {\(1\)};
+        \node[state, right of=q1] (q2) {\(2\)};
+        \node[state, above right of=q2] (q3) {\(3\)};
+        \node[state, right of=q3] (q4) {\(4\)};
+        \node[state, accepting, right of=q4] (q5) {\(5\)};
+        \node[state, right of=q2] (q6) {\(6\)};
+        \node[state, accepting, right of=q6] (q7) {\(7\)};
+        \node[state, right of=q7] (q8) {\(8\)};
+
+        \draw
+          (q1) edge[above] node[blue]{\(b\)} (q2)
+          (q2) edge[above] node[red]{\(a\)} (q3)
+          (q3) edge[above] node[blue]{\(b\)} (q4)
+          (q4) edge[above] node[red]{\(a\)} (q5)
+          (q2) edge[above] node[red]{\(b\)} (q6)
+          (q6) edge[above] node[blue]{\(a\)} (q7)
+          (q7) edge[above] node[red]{\(b\)} (q8);
+      \end{tikzpicture}
+
+      \pause[]
+
+      \vphantom{}
+
+      \begin{tikzpicture}
+        \tikzset{
+          ->,
+          >=stealth',
+          node distance=2.25cm,
+          every state/.style={
+            thick,
+            inner sep = 0pt,
+            minimum size = 0.75cm,
+          },
+          initial text=$ $,
+        }
+        \node[state, initial] (q1) {\(1\)};
+        \node[state, right of=q1] (q2) {\(2\)};
+        \node[state, above right of=q2] (q3) {\(3\)};
+        \node[state, right of=q3] (q4) {\(4\)};
+        \node[state, accepting, right of=q4] (q5) {\(5\)};
+        \node[state, right of=q2] (q6) {\(6\)};
+        \node[state, accepting, right of=q6] (q7) {\(7\)};
+        \node[state, right of=q7] (q8) {\(8\)};
+
+        \draw
+          (q1) edge[above] node[red]{\(a, b\)} (q2)
+          (q2) edge[above] node[blue]{\(b\)} (q3)
+          (q3) edge[above] node[red]{\(a\)} (q4)
+          (q4) edge[above] node[blue]{\(b\)} (q5)
+          (q2) edge[above] node[blue]{\(b\)} (q6)
+          (q6) edge[above] node[red]{\(b\)} (q7)
+          (q7) edge[above] node[blue]{\(a\)} (q8);
+      \end{tikzpicture}
+    }
+    \only<3-4> {
+      \begin{tikzpicture}
+        \tikzset{
+          ->,
+          >=stealth',
+          node distance=2.25cm,
+          every state/.style={
+            thick,
+            inner sep = 0pt,
+            minimum size = 0.75cm,
+          },
+          initial text=$ $,
+        }
+        \node[state, initial] (q1) {\(1\)};
+        \node[state, right of=q1] (q2b) {\(2_b\)};
+        \node[state, left of=q3] (q2a) {\(2_a\)};
+        \node[state, above right of=q2b] (q3) {\(3\)};
+        \node[state, right of=q3] (q4) {\(4\)};
+        \node[state, accepting, right of=q4] (q5) {\(5\)};
+        \node[state, right of=q2] (q6) {\(6\)};
+        \node[state, accepting, right of=q6] (q7) {\(7\)};
+        \node[state, right of=q7] (q8) {\(8\)};
+
+        \draw
+          (q1) edge[above] node[blue]{\(b\)} (q2a)
+          (q1) edge[above] node[blue]{\(b\)} (q2b)
+          (q2a) edge[above] node[red]{\(a\)} (q3)
+          (q3) edge[above] node[blue]{\(b\)} (q4)
+          (q4) edge[above] node[red]{\(a\)} (q5)
+          (q2b) edge[above] node[red]{\(b\)} (q6)
+          (q6) edge[above] node[blue]{\(a\)} (q7)
+          (q7) edge[above] node[red]{\(b\)} (q8);
+      \end{tikzpicture}
+
+      \pause[4]
+
+      \vphantom{}
+
+      \begin{tikzpicture}
+        \tikzset{
+          ->,
+          >=stealth',
+          node distance=2.25cm,
+          every state/.style={
+            thick,
+            inner sep = 0pt,
+            minimum size = 0.75cm,
+          },
+          initial text=$ $,
+        }
+        \node[state, initial] (q1) {\(1\)};
+        \node[state, right of=q1] (q2b) {\(2_b\)};
+        \node[state, left of=q3] (q2a) {\(2_a\)};
+        \node[state, above right of=q2b] (q3) {\(3\)};
+        \node[state, right of=q3] (q4) {\(4\)};
+        \node[state, accepting, right of=q4] (q5) {\(5\)};
+        \node[state, right of=q2] (q6) {\(6\)};
+        \node[state, accepting, right of=q6] (q7) {\(7\)};
+        \node[state, right of=q7] (q8) {\(8\)};
+
+        \draw
+          (q1) edge[above] node[red]{\(a\)} (q2a)
+          (q1) edge[above] node[red]{\(b\)} (q2b)
+          (q2a) edge[above] node[blue]{\(b\)} (q3)
+          (q3) edge[above] node[red]{\(a\)} (q4)
+          (q4) edge[above] node[blue]{\(b\)} (q5)
+          (q2b) edge[above] node[blue]{\(b\)} (q6)
+          (q6) edge[above] node[red]{\(b\)} (q7)
+          (q7) edge[above] node[blue]{\(a\)} (q8);
+      \end{tikzpicture}
+    }
+  \end{example}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Automate quelconque}
+    Si on ajoute les cycles, on devra alors supposer que tous n\oe{}uds
+    intermédiaire se trouve dans le cas du n\oe{}ud \(2\), on devra donc le
+    dupliquer.
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{example}
+    \centering
+    \only<1-2> {
+      \begin{tikzpicture}
+        \tikzset{
+          ->,
+          >=stealth',
+          node distance=2.25cm,
+          every state/.style={
+            thick,
+            inner sep = 0pt,
+            minimum size = 0.75cm,
+          },
+          initial text=$ $,
+        }
+        \node[state, initial] (1) {\(1\)};
+        \node[state, right of=1] (2) {\(2\)};
+        \node[state, accepting, right of=2] (3) {\(3\)};
+        \draw
+          (1) edge[below] node{\(a\)} (2)
+          (2) edge[below] node{\(b\)} (3)
+          (3) edge[bend right, above] node{\(b\)} (1);
+      \end{tikzpicture}
+    }
+    \only<2> {
+      \begin{tikzpicture}
+        \tikzset{
+          ->,
+          >=stealth',
+          node distance=2.25cm,
+          every state/.style={
+            thick,
+            inner sep = 0pt,
+            minimum size = 0.75cm,
+          },
+          initial text=$ $,
+        }
+        \node[state, initial] (1) {\(1\)};
+        \node[state, above of=3] (1a) {\(1_a\)};
+        \node[state, right of=1] (2b) {\(2_b\)};
+        \node[state, above of=2b] (2) {\(2\)};
+        \node[state, accepting, right of=2b] (3) {\(3\)};
+        \node[state, accepting, above of=1] (3b) {\(3_b\)};
+        \draw
+          (1) edge[below] node{\(b\)} (2b)
+          (2b) edge[below] node{\(a\)} (3)
+          (3) edge[right] node{\(a\)} (1a)
+          (1a) edge[above] node{\(b\)} (2)
+          (2) edge[above] node{\(b\)} (3b)
+          (3b) edge[left] node{\(b\)} (1);
+      \end{tikzpicture}
+    }
+  \end{example}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Compléxité en état de notre algorithme}
+    Dans le pire cas, notre algorithme dupliquera tous les états de
+    l'automate. 
+
+    \pause[]
+    \vphantom{}
+
+    Sachant que chaque état peut être dupliqué étant de voir qu'il y a de
+    symbole de l'alphabet plus un. 
+
+    \pause[]
+    \vphantom{}
+
+    Alors, la complexité dans le pire cas de notre algorithme est \(n(\lvert
+    \Sigma \rvert + 1)\).
+  \end{block}
+\end{frame}

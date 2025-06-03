@@ -1,0 +1,611 @@
+\section{Le langage permuté}
+
+Dans cette section, nous nous intéressons à un langage particulier, appelé
+<< langage permuté >>. Nous commencerons par en donner une définition
+formelle. Nous introduirons ensuite un algorithme de << twistage >> permettant
+de construire un automate non déterministe reconnaissant ce langage, à partir
+d’un automate initial. Nous établirirons ensuite la validité de cet algorithme
+par une preuve, et analyserons sa complexité dans le pire des cas. Enfin, nous
+conclurons cette section par une brève synthèse des résultats obtenus et des
+perspectives de prolongement.
+
+\subsection{Définition}
+
+\begin{definition}[Le langage permuté]
+  Le langage \(Twist(L)\) (aussi noté \(Permute(L)\)) est construit à partir
+  de \(L\) en échangeant toutes les paires de lettres d'indice \(2k\) et
+  \(2k + 1\) pour \(k \in \mathbb{N}\)~:
+  \begin{gather*}
+    \begin{align*}
+      &Twist(\varepsilon) = \varepsilon,&
+      &Twist(a) = a,&
+      &Twist(a \cdot b \cdot v) = b \cdot a \cdot Twist(v),&
+    \end{align*} \\
+    \text{avec } (a, b) \in \Sigma^2 \text{ et } v \in \Sigma^*, \\
+    Twist(L) = \bigcup_{w \in L} Twist(w).
+  \end{gather*}
+\end{definition}
+
+\begin{example}
+  \vspace{-\baselineskip}
+  \begin{align*}
+    L &= \{a, ab, aba, baba\}, \\
+    Twist(L) &= \{a, ba, baa, abab\}.
+  \end{align*}
+\end{example}
+
+Maintenant que nous savons ce qu’est le langage permuté, nous allons présenter
+un algorithme permettant de construire un automate le reconnaissant, à partir
+d’un automate reconnaissant le langage initial.
+
+\subsection{Algorithme de twistage}
+
+Notre algorithme prendra en entrée un automate non déterministe et renverra un
+automate non déterministe. Mais, avant de rentrer dans le dur de l'algorithme,
+nous regardons le principe de l'algorithme, puis nous verrons sa définition
+formelle.
+
+\subsubsection{Principe de l'algorithme}
+
+Avant de twister un automate quelconque, on va s'intéresser à des cas
+particuliers pour essayer de trouver une logique commune.
+
+\vphantom{}
+
+Le premier cas intéressant sont les automates qui forment qu'une longue
+<< branche >>, c'est-à-dire que chaque état n'a qu'une transition vers un
+autre état différent de lui-même et que l'automate ne possède qu'un seul état
+initial~:
+
+\begin{figure}[H]
+  \centering
+  \captionsetup{type=figure,justification=centering}
+  \begin{tikzpicture}
+    \tikzset{
+      ->,
+      >=stealth',
+      node distance=2.5cm,
+      every state/.style={thick},
+      initial text=$ $,
+    }
+    \node[state, initial] (q1) {\(q_1\)};
+    \node[state, right of=q1] (q2) {\(q_2\)};
+    \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+    \node[state, right of=q3] (q4) {\(q_4\)};
+    \node[state, right of=q4] (q5) {\(q_5\)};
+    \node[state, accepting, right of=q5] (q6) {\(q_6\)};
+
+    \draw
+      (q1) edge[above] node{b} (q2)
+      (q2) edge[above] node{a} (q3)
+      (q3) edge[above] node{b} (q4)
+      (q4) edge[above] node{a} (q5)
+      (q5) edge[above] node{b} (q6);
+  \end{tikzpicture}
+  \caption{
+    Exemple d'un automate qui forme qu'une << branche >>.
+  }\label{fig:automate_branche}
+\end{figure}
+
+En effet, pour les automates de cette forme, il nous suffit d'échanger les
+paires de transitions d'indice \(2k\) et \(2k + 1\) pour \(k \in\mathbb{N}\),
+sauf pour la dernière transition si la branche est de longueur impaire~:
+
+\begin{figure}[H]
+  \centering
+  \captionsetup{type=figure,justification=centering}
+  \begin{tikzpicture}
+    \tikzset{
+      ->,
+      >=stealth',
+      node distance=2.5cm,
+      every state/.style={thick},
+      initial text=$ $,
+    }
+    \node[state, initial] (q1) {\(q_1\)};
+    \node[state, right of=q1] (q2) {\(q_2\)};
+    \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+    \node[state, right of=q3] (q4) {\(q_4\)};
+    \node[state, right of=q4] (q5) {\(q_5\)};
+    \node[state, accepting, right of=q5] (q6) {\(q_6\)};
+
+    \draw
+      (q1) edge[above] node{a} (q2)
+      (q2) edge[above] node{b} (q3)
+      (q3) edge[above] node{a} (q4)
+      (q4) edge[above] node{b} (q5)
+      (q5) edge[above] node{b} (q6);
+  \end{tikzpicture}
+  \caption{
+    Exemple de l'automate figure~\ref{fig:automate_branche} après twistage.
+  }
+\end{figure}
+
+De plus, les automates qui forment des arborescences dont les \emph{sections
+interembranchements} sont de longueur paire et avec des longueurs de
+\emph{sections terminales} quelconques, sont intéressants~:
+
+\begin{figure}[H]
+  \centering
+  \captionsetup{type=figure,justification=centering}
+  \begin{tikzpicture}
+    \tikzset{
+      ->,
+      >=stealth',
+      node distance=2.5cm,
+      every state/.style={thick},
+      initial text=$ $,
+    }
+    \node[state, initial] (q1) {\(q_1\)};
+    \node[state, right of=q1] (q2) {\(q_2\)};
+    \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+    \node[state, above right of=q3] (q4) {\(q_4\)};
+    \node[state, right of=q4] (q5) {\(q_5\)};
+    \node[state, accepting, right of=q5] (q6) {\(q_6\)};
+    \node[state, right of=q3] (q7) {\(q_7\)};
+    \node[state, accepting, right of=q7] (q8) {\(q_8\)};
+    \node[state, right of=q8] (q9) {\(q_9\)};
+    \node[state, accepting, below right of=q3] (q10) {\(q_{10}\)};
+    \node[state, right of=q10] (q11) {\(q_{11}\)};
+    \node[state, right of=q11] (q12) {\(q_{12}\)};
+
+    \draw
+      (q1) edge[above] node{b} (q2)
+      (q2) edge[above] node{a} (q3)
+      (q3) edge[above] node{b} (q4)
+      (q4) edge[above] node{a} (q5)
+      (q5) edge[above] node{b} (q6)
+      (q3) edge[above] node{a} (q7)
+      (q7) edge[above] node{b} (q8)
+      (q8) edge[above] node{b} (q9)
+      (q3) edge[above] node{b} (q10)
+      (q10) edge[above] node{b} (q11)
+      (q11) edge[above] node{a} (q12);
+  \end{tikzpicture}
+  \caption{
+    Exemple d'un automate qui forme une arborescence dont les sections
+    interembranchements sont de longueur paire.
+  }\label{fig:automate_arbre}
+\end{figure}
+
+On devra alors appliquer la même logique que l'on a utilisée pour branches,
+mais pour chaque section cette fois-ci~:
+
+\begin{figure}[H]
+  \centering
+  \captionsetup{type=figure,justification=centering}
+  \begin{tikzpicture}
+    \tikzset{
+      ->,
+      >=stealth',
+      node distance=2.5cm,
+      every state/.style={thick},
+      initial text=$ $,
+    }
+    \node[state, initial] (q1) {\(q_1\)};
+    \node[state, right of=q1] (q2) {\(q_2\)};
+    \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+    \node[state, above right of=q3] (q4) {\(q_4\)};
+    \node[state, right of=q4] (q5) {\(q_5\)};
+    \node[state, accepting, right of=q5] (q6) {\(q_6\)};
+    \node[state, right of=q3] (q7) {\(q_7\)};
+    \node[state, accepting, right of=q7] (q8) {\(q_8\)};
+    \node[state, right of=q8] (q9) {\(q_9\)};
+    \node[state, accepting, below right of=q3] (q10) {\(q_{10}\)};
+    \node[state, right of=q10] (q11) {\(q_{11}\)};
+    \node[state, right of=q11] (q12) {\(q_{12}\)};
+
+    \draw
+      (q1) edge[above] node{a} (q2)
+      (q2) edge[above] node{b} (q3)
+      (q3) edge[above] node{a} (q4)
+      (q4) edge[above] node{b} (q5)
+      (q5) edge[above] node{b} (q6)
+      (q3) edge[above] node{b} (q7)
+      (q7) edge[above] node{a} (q8)
+      (q8) edge[above] node{b} (q9)
+      (q3) edge[above] node{b} (q10)
+      (q10) edge[above] node{b} (q11)
+      (q11) edge[above] node{a} (q12);
+  \end{tikzpicture}
+  \caption{
+    Exemple de l'automate figure~\ref{fig:automate_arbre} après twistage.
+  }\
+\end{figure}
+
+Enfin, considérons les automates qui forment des arborescences dans lesquelles
+les sections interembranchements de longueur impaire ne se séparent que par un
+seul symbole. Dans ce cas, si la section suivante a une longueur paire, elle
+doit également se séparer par un seul symbole. En revanche, si cette section
+est de longueur impaire, alors aucune contrainte ne s'applique à elle~:
+
+\begin{figure}[H]
+  \centering
+  \captionsetup{type=figure,justification=centering}
+  \begin{tikzpicture}
+    \tikzset{
+      ->,
+      >=stealth',
+      node distance=2.5cm,
+      every state/.style={thick},
+      initial text=$ $,
+    }
+    \node[state, initial] (q1) {\(q_1\)};
+    \node[state, right of=q1] (q2) {\(q_2\)};
+    \node[state, above right of=q2] (q3) {\(q_3\)};
+    \node[state, right of=q3] (q4) {\(q_4\)};
+    \node[state, accepting, right of=q4] (q5) {\(q_5\)};
+    \node[state, right of=q2] (q6) {\(q_6\)};
+    \node[state, accepting, right of=q6] (q7) {\(q_7\)};
+    \node[state, right of=q7] (q8) {\(q_8\)};
+
+    \draw
+      (q1) edge[above] node{b} (q2)
+      (q2) edge[above] node{a} (q3)
+      (q3) edge[above] node{b} (q4)
+      (q4) edge[above] node{a} (q5)
+      (q2) edge[above] node{a} (q6)
+      (q6) edge[above] node{a} (q7)
+      (q7) edge[above] node{b} (q8);
+  \end{tikzpicture}
+  \caption{
+    Exemple d’un automate forme une arborescence avec des sections
+    interembranchements contraintes.
+  }\label{fig:automate_arbre2}
+\end{figure}
+
+On pourra ensuite appliquer la même logique qu'avant sans que l'automate
+reconnaisse des mots qu'il ne devrait pas~:
+
+\begin{figure}[H]
+  \centering
+  \captionsetup{type=figure,justification=centering}
+  \begin{tikzpicture}
+    \tikzset{
+      ->,
+      >=stealth',
+      node distance=2.5cm,
+      every state/.style={thick},
+      initial text=$ $,
+    }
+    \node[state, initial] (q1) {\(q_1\)};
+    \node[state, right of=q1] (q2) {\(q_2\)};
+    \node[state, above right of=q2] (q3) {\(q_3\)};
+    \node[state, right of=q3] (q4) {\(q_4\)};
+    \node[state, accepting, right of=q4] (q5) {\(q_5\)};
+    \node[state, right of=q2] (q6) {\(q_6\)};
+    \node[state, accepting, right of=q6] (q7) {\(q_7\)};
+    \node[state, right of=q7] (q8) {\(q_8\)};
+
+    \draw
+      (q1) edge[above] node{a} (q2)
+      (q2) edge[above] node{b} (q3)
+      (q3) edge[above] node{a} (q4)
+      (q4) edge[above] node{b} (q5)
+      (q2) edge[above] node{b} (q6)
+      (q6) edge[above] node{b} (q7)
+      (q7) edge[above] node{a} (q8);
+  \end{tikzpicture}
+  \caption{
+    Exemple de l'automate figure~\ref{fig:automate_arbre2} après twistage.
+  }
+\end{figure}
+
+Nous avons donc vu tous les automates sur lesquels il << suffit >> d'échanger
+les paires de transitions pour que ça marche. Cependant, nous allons
+maintenant voir un automate avec lequel il faut avoir une étape de transition
+pour le transformer dans un cas qu'on vient d'observer.
+
+\vphantom{}
+
+Prenons maintenant un automate qui forme une arborescence, mais qui ne
+respecte pas les conditions que nous avons fixées précédemment~:
+
+\begin{figure}[H]
+  \centering
+  \captionsetup{type=figure,justification=centering}
+  \begin{tikzpicture}
+    \tikzset{
+      ->,
+      >=stealth',
+      node distance=2.5cm,
+      every state/.style={thick},
+      initial text=$ $,
+    }
+    \node[state, initial] (q1) {\(q_1\)};
+    \node[state, right of=q1] (q2) {\(q_2\)};
+    \node[state, above right of=q2] (q3) {\(q_3\)};
+    \node[state, right of=q3] (q4) {\(q_4\)};
+    \node[state, accepting, right of=q4] (q5) {\(q_5\)};
+    \node[state, right of=q2] (q6) {\(q_6\)};
+    \node[state, accepting, right of=q6] (q7) {\(q_7\)};
+    \node[state, right of=q7] (q8) {\(q_8\)};
+
+    \draw
+      (q1) edge[above] node{b} (q2)
+      (q2) edge[above] node{a} (q3)
+      (q3) edge[above] node{b} (q4)
+      (q4) edge[above] node{a} (q5)
+      (q2) edge[above] node{b} (q6)
+      (q6) edge[above] node{a} (q7)
+      (q7) edge[above] node{b} (q8);
+  \end{tikzpicture}
+  \caption{
+    Exemple d’un automate forme une arborescence avec des sections
+    interembranchements sans contraintes.
+  }\label{fig:automate_arbre3}
+\end{figure}
+
+Dans ce cas, puisque l'automate de la figure~\ref{fig:automate_arbre3} ne
+respecte pas les contraintes fixées précédemment (notamment sur la parité des
+longueurs des sections interembranchements et leur séparation par un unique
+symbole), on ne peut pas simplement échanger les paires de transitions comme
+dans les exemples précédents.
+
+\vphantom{}
+
+Pour résoudre cela, transformons l’automate en dupliquant l’état
+d’embranchement (ici \(q_2\)) autant de fois qu’il y a de transitions
+sortantes avec des symboles différents. Dans cet exemple, \(q_2\) possède deux
+transitions sortantes~: l'une étiquetée par \(a\) et l'autre par \(b\). On
+créera donc deux copies distinctes de \(q_2\), chacune dédiée à un seul
+symbole de transition. Cela permet d’isoler les chemins et de leur appliquer
+ensuite les règles précédentes de transformation (comme l’échange des paires
+de transitions).
+
+\begin{figure}[H]
+  \centering
+  \captionsetup{type=figure,justification=centering}
+  \begin{tikzpicture}
+    \tikzset{
+      ->,
+      >=stealth',
+      node distance=2.5cm,
+      every state/.style={thick},
+      initial text=$ $,
+    }
+    \node[state, initial] (q1) {\(q_1\)};
+    \node[state, above right of=q1] (q2a) {\(q_{2a}\)};
+    \node[state, right of=q1] (q2b) {\(q_{2b}\)};
+    \node[state, right of=q2a] (q3) {\(q_3\)};
+    \node[state, right of=q3] (q4) {\(q_4\)};
+    \node[state, accepting, right of=q4] (q5) {\(q_5\)};
+    \node[state, right of=q2] (q6) {\(q_6\)};
+    \node[state, accepting, right of=q6] (q7) {\(q_7\)};
+    \node[state, right of=q7] (q8) {\(q_8\)};
+
+    \draw
+      (q1) edge[above] node{b} (q2a)
+      (q1) edge[above] node{b} (q2b)
+      (q2a) edge[above] node{a} (q3)
+      (q3) edge[above] node{b} (q4)
+      (q4) edge[above] node{a} (q5)
+      (q2b) edge[above] node{b} (q6)
+      (q6) edge[above] node{a} (q7)
+      (q7) edge[above] node{b} (q8);
+  \end{tikzpicture}
+  \caption{
+    Exemple de l'automate figure~\ref{fig:automate_arbre3} après la
+    duplication de \(q_2\).
+  }\label{fig:automate_arbre4}
+\end{figure}
+
+Il nous reste donc à appliquer les précédentes règles de transformation~:
+
+\begin{figure}[H]
+  \centering
+  \captionsetup{type=figure,justification=centering}
+  \begin{tikzpicture}
+    \tikzset{
+      ->,
+      >=stealth',
+      node distance=2.5cm,
+      every state/.style={thick},
+      initial text=$ $,
+    }
+    \node[state, initial] (q1) {\(q_1\)};
+    \node[state, above right of=q1] (q2a) {\(q_{2a}\)};
+    \node[state, right of=q1] (q2b) {\(q_{2b}\)};
+    \node[state, right of=q2a] (q3) {\(q_3\)};
+    \node[state, right of=q3] (q4) {\(q_4\)};
+    \node[state, accepting, right of=q4] (q5) {\(q_5\)};
+    \node[state, right of=q2] (q6) {\(q_6\)};
+    \node[state, accepting, right of=q6] (q7) {\(q_7\)};
+    \node[state, right of=q7] (q8) {\(q_8\)};
+
+    \draw
+      (q1) edge[above] node{a} (q2a)
+      (q1) edge[above] node{b} (q2b)
+      (q2a) edge[above] node{b} (q3)
+      (q3) edge[above] node{a} (q4)
+      (q4) edge[above] node{b} (q5)
+      (q2b) edge[above] node{b} (q6)
+      (q6) edge[above] node{b} (q7)
+      (q7) edge[above] node{a} (q8);
+  \end{tikzpicture}
+  \caption{
+    Exemple de l'automate figure~\ref{fig:automate_arbre4} après le twistage.
+  }
+\end{figure}
+
+Maintenant que nous savons transformer tous les automates qui forment des
+arborescences, pour pouvoir transformer n'importe quel automate, nous allons
+devoir introduire des << cycles >> (notions de théorie des graphes).
+
+\vphantom{}
+
+Lorsque des cycles sont présents, un même état peut être atteint par plusieurs
+chemins différents, parfois de longueurs impaires. Cela complique
+l'application des règles de transformation. Ainsi, chaque état intermédiaire
+devra, comme nous l’avons fait précédemment avec \(q_2\), être dupliqué autant
+de fois que nécessaire. Cette duplication permet d’isoler les différents
+contextes d’accès à cet état, en fonction de la parité du chemin qui y mène,
+et donc garantir que les règles de transformation restent applicables même en
+présence de cycles.
+
+\vphantom{}
+
+Dans notre algorithme final, il ne sera pas nécessaire d’avoir une phase de
+prétraitement séparée pour transformer l’automate. En effet, l’algorithme
+intégrera directement la transformation (duplication des états) ainsi que le
+twistage.
+
+\subsubsection{Formalisation de l'algorithme}
+
+Maintenant que nous avons l'idée de l'algorithme, nous verrons sa
+définition formelle~:
+\begin{minted}{text}
+twister(M):
+  N |\(\leftarrow\)| (|\(\varnothing\)|, |\(\varnothing\)|, |\(\varnothing\)|, |\(\varnothing \to \varnothing\)|)
+  |\textbf{for}| q |\textbf{in}| N.I |\textbf{do}|
+    N.Q |\(\leftarrow\)| |\(\texttt{N.Q} \cup \texttt{\{\,q\,\}}\)|
+    N.I |\(\leftarrow\)| |\(\texttt{N.I} \cup \texttt{\{\,q\,\}}\)|
+    N.F |\(\leftarrow\)| |\(\texttt{N.F} \cup \texttt{(N.F} \cap \texttt{\{\,q\,\})}\)|
+    twister_aux(M, q, N)
+  |\textbf{return}| N
+\end{minted}
+
+\newpage
+\begin{minted}{text}
+twister_aux(M, q, N):
+  |\textbf{for}| (p, a) |\textbf{in}| N.|\(\delta\texttt{(q)}\)| |\textbf{do}|
+    |\textbf{if}| p |\(\in\)| M.F |\textbf{then}|
+      N.Q |\(\leftarrow\)| |\(\texttt{N.Q} \cup \texttt{\{\,p}_\texttt{a} \texttt{\,\}}\)|
+      N.F |\(\leftarrow\)| |\(\texttt{N.F} \cup \texttt{\{\,p}_\texttt{a} \texttt{\,\}}\)|
+      N.|\(\delta\)| |\(\leftarrow\)| |\(\texttt{N.}\delta \cup \texttt{\{\,(q, a, } \texttt{p}_\texttt{a}\texttt{)\,\}}\)|
+    |\textbf{for}| (r, b) |\textbf{in}| N.|\(\delta\texttt{(p)}\)| |\textbf{do}|
+      A |\(\leftarrow\)| N
+      A.Q |\(\leftarrow\)| |\(\texttt{A.Q} \cup \texttt{\{\,} \texttt{p}_\texttt{b}, \texttt{r\,\}}\)|
+      A.F |\(\leftarrow\)| |\(\texttt{A.F} \cup \texttt{(M.F} \cap \texttt{\{\,r\,\})}\)|
+      A.|\(\delta\)| |\(\leftarrow\)| |\(\texttt{A.}\delta \cup \texttt{\{\,(q, b, } \texttt{p}_\texttt{b}\texttt{)}, \texttt{(} \texttt{p}_\texttt{b} \texttt{, a, r)\,\}}\)|
+      |\textbf{if}| r |\(\notin\)| N.Q |\textbf{then}|
+        A |\(\leftarrow\)| twister_aux(M, r, A)
+      N |\(\leftarrow\)| A
+  |\textbf{return}| N
+\end{minted}
+
+\begin{remark}
+  Cet algorithme parcourt les paires de transitions sortantes d’un état donné,
+  puis duplique l’état intermédiaire en fonction du symbole de transition
+  utilisé. Il applique ensuite l’opération de twistage en inversant l’ordre
+  des deux transitions, avant de poursuivre récursivement le traitement sur
+  l'état d’arrivée de la paire de transitions.
+\end{remark}
+
+\subsection{Preuve de notre algorithme}
+
+Pour prouver que notre algorithme est correct et construit bien l'automate
+du langage permuté, nous allons d'abord montrer que tous mots reconnus
+par l'automate sont des mots appartenant au langage permuté. Enfin, nous
+allons montrer que tous les mots du langage permuté sont reconnus par 
+l'automate.
+
+\subsubsection{Tous les mots reconnus sont des mots du langage permut\'e}
+
+\begin{proof}\label{proof:perm_rec}
+  Soit \(M \in NFA(\Sigma, \eta)\), \(N = \texttt{twister}(M)\) et un mot
+  \(w\) reconnu par l'automate \(N\). Pour prouver qu'il fait partie du
+  langage permuté, nous allons faire une preuve par récurrence sur la longueur
+  de ce mot~:
+
+  \vphantom{}
+
+  \begin{itemize}
+    \item[\bullet~\textbf{Initialisation~:}] \(\lvert w \rvert \leq 1\)
+      \begin{itemize}
+        \item[\circ] Si \(\lvert w \rvert = 0\), c'est qu'alors qu'un des
+          états initiaux est finaux aussi, or dans l'algorithme, on duplique
+          les états initiaux (en les laissant finaux s'ils le sont) donc cela
+          veut dire que \(M\) reconnait lui aussi \(\varepsilon\). Ainsi,
+          \(w \in Twist(L(M))\).
+
+        \vphantom{}
+
+        \item[\circ] Si \(\lvert w \rvert = 1\), c'est qu'alors après en une
+          transition d'un état initial, il y a un état final. Or dans
+          l'algorithme, s'il y a une transition qui amène vers un état final,
+          alors cette transition est gardée et l'état reste final. Par
+          conséquent, cela veut dire que l'automate \(M\) possède aussi cette
+          transition et le permuté d'un mot composé d'un symbole est-ce même
+          mot. Ainsi, \(w \in Twist(L(M))\).
+      \end{itemize}
+
+      \vphantom{}
+
+    \item[\bullet~\textbf{Hérédité~:}] \(\lvert w \rvert \geq 2\)
+
+      On peut donc décomposer le mot \(w\) tel que \(w = a \cdot b \cdot u\),
+      avec \((a, b) \in \Sigma^2\) et \(u \in \Sigma^*\). S'il est reconnu,
+      cela veut dire qu'il existe un chemin partant d'un état initial \(i\)
+      avec une transition en \(a\) puis en \(b\). Or dans notre algorithme,
+      nous inversons les paires de transitions en partant des états initiaux,
+      cela veut dire que dans l'automate \(M\) il existe une transition
+      partant du même état initial \(i\) en \(b\) ensuite en \(a\). Il reste
+      donc à savoir si le mot \(u\) fait partie du langage permuté de
+      l'automate \(M\) qu'aurait comme états initiaux \(\delta(i, b
+      \cdot a)\). Or dans notre algorithme, nous faisons un appel récursif
+      pour calculer l'automate twister en partant de \(i\), ainsi par
+      hypothèse de récurrence \(w \in Twist(L(M))\).
+  \end{itemize}
+\end{proof}
+
+\subsubsection{Tous les mots du langage permuté sont reconnus}
+
+\begin{proof}[Esquisse de preuve]
+  Nous procédons également par récurrence sur la longueur des mots du langage
+  de base \(L(M)\). L’objectif est de montrer que pour tout mot \(w \in
+  L(M)\), sa permutation correspondante (par inversion de paires de
+  transitions) est bien reconnue par l’automate \(N = \texttt{twister}(M)\).
+
+  \vphantom{}
+
+  \begin{itemize}
+    \item[\bullet~\textbf{Initialisation~:}] \(\lvert w \rvert \leq 1\)
+
+      Alors \(w\) est soit le mot vide, soit un mot d’un seul symbole. Dans
+      les deux cas, comme vu précédemment, l’algorithme conserve ces cas en
+      dupliquant les états initiaux et finaux sans modification, ce qui
+      garantit que \(Twist(w) \in L(N)\).
+
+    \vphantom{}
+
+    \item[\bullet~\textbf{Hérédité~:}]  \(\lvert w \rvert \geq 2\)
+      
+      Soit \(w = b \cdot a \cdot u \in L(M)\), d'après la construction de
+      l’algorithme, les transitions sont inversées par paire. Ainsi, si
+      \(M\) reconnaît le préfixe \(b \cdot a\), alors l’automate \(N\)
+      reconnaît le préfixe \(a \cdot b\). Par hypothèse de récurrence, la
+      mot \(Twist(u)\) est également reconnue par \(N\), ce qui conclut que
+      \(Twist(w) \in L(N)\).
+  \end{itemize}
+\end{proof}
+
+\subsection{Pire cas de notre algorithme}
+
+Dans cette section, nous établirons une borne supérieure sur le nombre
+d’états de l’automate que notre algorithme peut engendrer. Cette estimation,
+distincte de la complexité du langage permuté, nous offre néanmoins un
+plafond pour la complexité en états.
+
+\vphantom{}
+
+Dans notre pire cas, notre algorithme dupliquera tous les états par au pire le
+nombre de symboles de l’alphabet plus un (puisqu'on a les états indicés et
+ceux non indicés). Par conséquent, dans le pire des cas, l’automate produit
+aura \(n(\lvert \Sigma \rvert + 1)\) états, avec n le nombre d’états de
+l’automate de départ.
+
+\subsection{Conclusion}
+
+Pour conclure, nous venons de créer un algorithme qui prend n’importe quel
+automate en entrée et qui calcule l’automate du langage permuté de cet
+automate. De plus, notre algorithme crée un automate dans le pire des cas à
+\(n(\lvert \Sigma \rvert + 1)\). états. Par conséquent, la complexité en états
+du twistage d’un langage est d’au moins \(n(\lvert \Sigma \rvert + 1)\).
+
+\vphantom{}
+
+Malgré la petite complexité, on suppose que cette complexité n'est pas
+éteinte. Néanmoins, par manque de temps, aucune preuve de cette hypothèse ne
+sera pas fournie. Il serait donc intéressant d'étudier la complexité en état
+du twistage plus en détail dans un autre article.

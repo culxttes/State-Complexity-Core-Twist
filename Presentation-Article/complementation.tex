@@ -1,0 +1,234 @@
+% !chktex-file 8
+% !chktex-file 41
+
+\section{Calcul du complémentaire}
+
+\setframetitle{Calcul du complémentaire}
+
+\subsection{Préambule}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{La complexité du calcul du complémentaire}
+    \textit{Galina Jirásková} a démontré~\cite{JIRASKOVA2005287} que le
+    \blockquote{calcul du complémentaire} a une complexité exacte de
+    \(O_{\ndet}(2^n)\).
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{definition}[L'ensemble piégeant]
+    Un ensemble de couple de mots \(\{(x_i, y_i) \mid i \in \llbracket 0, n - 1
+    \rrbracket\}\) est dit un << ensemble piégeant >> pour un langage rationnel
+    \(L\). Si pour \(\forall i \in \llbracket 0, n - 1 \rrbracket\)~:
+    \begin{itemize}
+      \item \(x_i \cdot y_j \in L\).
+      \item \(i \neq j \Longrightarrow x_i \cdot y_j \notin L \lor
+        x_j \cdot y_i \notin L\).
+    \end{itemize}
+  \end{definition}
+
+  \pause[]
+
+  \begin{lemma}[%
+      de \textit{Jean-Camille Birget}~\cite{BIRGET1992185}\label{lem:birget}%
+    ]
+    Soit l'ensemble piégeant \(\{(x_i, y_i) \mid i \in \llbracket 0, n - 1
+    \rrbracket\}\) du langage rationnel \(L\). Alors, l'automate non
+    déterministe minimal qui reconnait \(L\) à minimum \(n\) états.
+  \end{lemma}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{La méthode appliquée}
+    Nous allons prendre un automate minimal non déterministe à \(n\) états et
+    prouver que le langage complémentaire du langage reconnu par l'automate a un
+    ensemble piégeant de cardinal \(2^n\).
+  \end{block}
+\end{frame}
+
+\subsection{Preuve}
+
+% \begin{frame}{\myframetitle}
+%   \begin{block}{\(M \in \NFA(\Sigma, \mathbb{N})\)}
+%     \(M = (Q, \{0\}, \{n - 1\}, \delta)\), \(\Sigma = \{0, 1\}\),
+%     \(L = L(M)\) avec~:
+%     \begin{gather*}
+%       \forall i \in \llbracket 0, n - 1 \rrbracket, \\
+%       \delta(i, \sigma) =
+%       \begin{cases}
+%         \{i + 1\} &\text{si } i < n - 1 \text{ et } \sigma = 1, \\
+%         \varnothing &\text{si } i = n - 1 \text{ et } \sigma = 1, \\
+%         \{0, i + 1\} &\text{si } i < n - 1 \text{ et } \sigma = 0, \\
+%         Q \setminus \{0\} &\text{si } i = n - 1 \text{ et }
+%         \sigma = 0. \\
+%       \end{cases}
+%     \end{gather*}
+%   \end{block}
+% \end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Représentation de l'automate \(M\)}
+    \centering
+    \begin{tikzpicture}[
+        scale=0.7,
+        transform shape
+      ]
+      \node[state, initial] (0) {\(0\)};
+      \node[state, right of=0] (1) {\(1\)};
+      \node[state, right of=1] (2) {\(2\)};
+      \node[state, draw=none, right of=2] (3) {\(\cdots\)};
+      \node[state, right of=3] (4) {\(n - 2\)};
+      \node[state, accepting, right of=4] (5) {\(n - 1\)};
+
+      \draw
+      (0) edge[loop above] node{\(0\)} (0)
+      (5) edge[loop above] node{\(0\)} (5)
+
+      (0) edge[above] node{\(0,1\)} (1)
+      (1) edge[above] node{\(0,1\)} (2)
+      (2) edge[above] node{\(0,1\)} (3)
+      (3) edge[above] node{\(0,1\)} (4)
+      (4) edge[above] node{\(0,1\)} (5)
+
+      (1) edge[above, bend left=40] node{\(0\)} (0)
+      (2) edge[above, bend left=50] node{\(0\)} (0)
+      (4) edge[above, bend left=60] node[xshift=-1cm]{\(0\)} (0)
+
+      (5) edge[above, bend left=40] node{\(0\)} (4)
+      (5) edge[above, bend left=50] node[xshift=-2cm, yshift=0.4cm]{\(0\)} (2)
+      (5) edge[above, bend left=60] node[xshift=1cm]{\(0\)} (1);
+    \end{tikzpicture}
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \setcounter{enumi}{1}
+  \begin{block}{
+      \raisebox{0.125\fontcharht\font`X}{%
+        \resizebox{!}{\fontcharht\font`X}{\usebeamertemplate{enumerate item}}%
+      }
+      Preuve
+    }
+    On va fixer un ensemble~:
+    \begin{gather*}
+      S = \left(\bigcup\limits_{i = 0}^{n - 1} \Sigma^i\right) \cup \{1^n\}
+    \end{gather*}
+    Pour tout mot \(x\) dans \(S\), on définit un mot \(y_x\) tel que
+    \(\{(x, y_x \mid x \in S)\}\) est un ensemble piégeant.
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{
+      \raisebox{0.125\fontcharht\font`X}{%
+        \resizebox{!}{\fontcharht\font`X}{\usebeamertemplate{enumerate item}}%
+      }
+      Preuve
+    }
+    \vspace{-1.5\topsep}
+    % LTeX: enabled=false
+    \begin{gather*}
+      \text{Pour } x \in S \text{ alors~:}\\
+      y_x =
+      \begin{cases}
+        1^n &\text{si } \delta(0, x) = Q, \\
+        \varepsilon &\text{si } \delta(0, x) = Q \setminus \{n - 1\}.
+      \end{cases}
+    \end{gather*}
+    % LTeX: enabled=true
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{
+      \raisebox{0.125\fontcharht\font`X}{%
+        \resizebox{!}{\fontcharht\font`X}{\usebeamertemplate{enumerate item}}%
+      }
+      Preuve
+    }
+    Sinon \(y_x = y_1 \cdot y_2 \cdots y_{n - 1 - k}\) avec \(k\), le plus petit
+    nombre dans \(Q\) qui n'était pas dans \(\delta(0, x)\) et pour \(j \in
+    \llbracket 1, n - 1 - k \rrbracket\)~:
+    \begin{gather*}
+      y_j =
+      \begin{cases}
+        1 &\text{si } n - j \in \delta(0, x), \\
+        0 &\text{si } n - j \notin \delta(0, x).
+      \end{cases}
+    \end{gather*}
+  \end{block}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{lemma}[%
+      de \textit{Galina Jirásková}~\cite{JIRASKOVA2005287}\label{lem:g1}%
+    ]
+    \vspace{-1.5\topsep}
+    \begin{gather*}
+      \forall x \in S, \forall p \in Q \\
+      p \in \delta(0, x) \Longrightarrow n - 1 \notin \delta(p, y_x) \\
+      \lor \\
+      p \notin \delta(0, x) \Longrightarrow n - 1 \in \delta(p, y_x)
+    \end{gather*}
+  \end{lemma}
+
+  \pause[]
+
+  \begin{lemma}[%
+      de \textit{Galina Jirásková}~\cite{JIRASKOVA2005287}\label{lem:g2}%
+    ]
+    \vspace{-1.5\topsep}
+    \begin{gather*}
+      \forall (x, z) \in S^2, x \neq z \Longrightarrow \delta(0, x) \neq
+      \delta(0, z)
+    \end{gather*}
+  \end{lemma}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \setcounter{enumi}{2}
+  \begin{block}{
+      \raisebox{0.125\fontcharht\font`X}{%
+        \resizebox{!}{\fontcharht\font`X}{\usebeamertemplate{enumerate item}}%
+      }
+      Preuve
+    }
+    Pour \(x\) dans \(S\), l'état \(n - 1\) n'est pas accessible depuis aucun
+    état de \(\delta(0, x)\) en lisant le mot \(y_x\) (Lemme~\ref{lem:g1}). Or
+    l'état \(n - 1\) est le seul état final de \(M\), donc le mot \(x \cdot
+    y_x\) n'est pas dans \(L(M)\).
+  \end{block}
+
+  \pause[]
+
+  \setcounter{enumi}{3}
+  \begin{block}{
+      \raisebox{0.125\fontcharht\font`X}{%
+        \resizebox{!}{\fontcharht\font`X}{\usebeamertemplate{enumerate item}}%
+      }
+      Preuve
+    }
+    Soit \(x\) et \(z\), deux mots distincts dans \(S\), sans perte de
+    généralité, il existe un \(q\) tel que \(q \in \delta(0, x)\) et \(q \notin
+    \delta(0, z)\) (Lemme~\ref{lem:g2}). Par conséquent, l'état \(n - 1\) peut
+    être accédé depuis \(q\) en lisant \(y_z\) (Lemme~\ref{lem:g1}).
+  \end{block}
+\end{frame}
+
+\subsection{Conclusion}
+
+\begin{frame}{\myframetitle}
+  \begin{block}{Conclusion}
+    On vient donc de prouver que l'ensemble \(\{(x, y_x) \mid x \in S\}\) est
+    un ensemble piégeant de taille \(2^n\). Ainsi, l'automate minimal doit au
+    moins avoir \(2^n\) états (Lemme~\ref{lem:birget}).
+
+    \onslide<2> {
+      \vphantom{}
+
+      Or \textit{Michael O Rabin} et \text{Dana S. Scott} ont
+      prouvé~\cite{RS1959} que le calcul du complémentaire pour un alphabet de
+      taille trois a une complexité de \(O_{\ndet}(2^n)\).
+    }
+  \end{block}
+\end{frame}
