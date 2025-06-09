@@ -2,42 +2,14 @@
 
 \section{Introduction}
 
-\subsection{Prémisse}
-
-\subsubsection{Langage}
-
-\setframetitle{Langage}
-
-\begin{frame}{\myframetitle}
-  \begin{definition}[Langage]
-    Un << langage >> \(L\) est un ensemble de mots sur un alphabet \(\Sigma\).
-  \end{definition}
-
-  \pause[]
-
-  \begin{example}
-    \vspace{-1.5\topsep}
-    \begin{gather*}
-      L = \{\varepsilon, aa, bb, abab\}
-    \end{gather*}
-  \end{example}
-
-  \pause[]
-
-  \begin{definition}[Le langage de l'ensemble des mots]
-    L'ensemble des mots possible sur l'alphabet \(\Sigma\) sera noté
-    \(\Sigma^*\).
-  \end{definition}
-\end{frame}
-
-\subsubsection{Automate}
+\subsection{Automate}
 
 \setframetitle{Automate}
 
 \begin{frame}{\myframetitle}
   \begin{definition}[Automate]
-    \(M = (Q, I, F, \delta)\) avec \(Q = \{q_1, q_2, q_3\}\), \(I = \{q_1\}\)
-    et \(F = \{q_3\}\).
+    \(M = (\Sigma, Q, I, F, \delta)\) avec \(Q = \{q_1, q_2, q_3\}\), \(I = 
+    \{q_1\}\) et \(F = \{q_3\}\).
     \begin{center}
       \begin{tikzpicture}
         \node[state, initial] (q1) {\(q_1\)};
@@ -81,21 +53,105 @@
 \end{frame}
 
 \begin{frame}{\myframetitle}
+  \begin{definition}[Automate déterministe]
+    On parlera d'automate << déterministe >> quand~:
+    \begin{center}
+      \only<1> {
+        \begin{tikzpicture}
+          \node[state, initial] (q1) {\(q_1\)};
+          \node[state, right of=q1] (q2) {\(q_2\)};
+          \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+
+          \draw
+          (q1) edge[loop above] node{\(a\)} (q1)
+          (q1) edge[above] node{\(b\)} (q2)
+          (q2) edge[above] node{\(a,b\)} (q3)
+          (q3) edge[bend right=50, above] node{\(b\)} (q2)
+          (q3) edge[bend left, below] node{\(a\)} (q1);
+        \end{tikzpicture}
+      }
+
+      \only<2> {
+        \begin{tikzpicture}[every initial by arrow/.style={red}]
+          \node[state, initial] (q1) {\(q_1\)};
+          \node[state, right of=q1] (q2) {\(q_2\)};
+          \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+
+          \draw
+          (q1) edge[loop above] node{\(a\)} (q1)
+          (q1) edge[above] node{\(b\)} (q2)
+          (q2) edge[above] node{\(a,b\)} (q3)
+          (q3) edge[bend right=50, above] node{\(b\)} (q2)
+          (q3) edge[bend left, below] node{\(a\)} (q1);
+        \end{tikzpicture}
+      }
+
+      \only<3> {
+        \begin{tikzpicture}[every initial by arrow/.style={gray}]
+          \node[state, initial] (q1) {\(q_1\)};
+          \node[state, right of=q1, gray] (q2) {\(q_2\)};
+          \node[state, accepting, right of=q2, gray] (q3) {\(q_3\)};
+
+          \draw
+          (q1) edge[loop above] node{\(a\)} (q1)
+          (q1) edge[above] node{\(b\)} (q2)
+          (q2) edge[above, gray] node{\(a,b\)} (q3)
+          (q3) edge[bend right=50, above, gray] node{\(b\)} (q2)
+          (q3) edge[bend left, below, gray] node{\(a\)} (q1);
+        \end{tikzpicture}
+      }
+
+      \only<4> {
+        \begin{tikzpicture}[every initial by arrow/.style={gray}]
+          \node[state, initial, gray] (q1) {\(q_1\)};
+          \node[state, right of=q1] (q2) {\(q_2\)};
+          \node[state, accepting, right of=q2, gray] (q3) {\(q_3\)};
+
+          \draw
+          (q1) edge[loop above, gray] node{\(a\)} (q1)
+          (q1) edge[above, gray] node{\(b\)} (q2)
+          (q2) edge[above] node{\(a,b\)} (q3)
+          (q3) edge[bend right=50, above, gray] node{\(b\)} (q2)
+          (q3) edge[bend left, below, gray] node{\(a\)} (q1);
+        \end{tikzpicture}
+      }
+
+      \only<5> {
+        \begin{tikzpicture}[every initial by arrow/.style={gray}]
+          \node[state, initial, gray] (q1) {\(q_1\)};
+          \node[state, right of=q1, gray] (q2) {\(q_2\)};
+          \node[state, accepting, right of=q2] (q3) {\(q_3\)};
+
+          \draw
+          (q1) edge[loop above, gray] node{\(a\)} (q1)
+          (q1) edge[above, gray] node{\(b\)} (q2)
+          (q2) edge[above, gray] node{\(a,b\)} (q3)
+          (q3) edge[bend right=50, above] node{\(b\)} (q2)
+          (q3) edge[bend left, below] node{\(a\)} (q1);
+        \end{tikzpicture}
+      }
+    \end{center}
+  \end{definition}
+\end{frame}
+
+\begin{frame}{\myframetitle}
   \begin{definition}[Automate minimal]
-    L'automate \(M_1\) est << minimal >> du langage \(L = \{ab\}\)~:
+    L'automate \(M_1\) est un automate << minimal >> du langage \(L =
+    \Sigma^* \cdot \Sigma\)~:
 
     \begin{minipage}{0.47\textwidth}
       \centering
       \begin{tikzpicture}[node distance=2.5cm]
         \node[state, initial] (0) {\(0\)};
-        \node[state, right of=0] (1) {\(1\)};
+        \node[state, accepting, right of=0] (1) {\(1\)};
         \node[state, accepting, below of=1] (2) {\(2\)};
 
         \node[above =.75cm of $(0)!0.5!(1)$, align=center] {\(M_1\)};
 
         \draw
-        (0) edge[above] node{\(a\)} (1)
-        (1) edge[right] node{\(b\)} (2);
+          (0) edge[loop below, below] node{\(a, b\)} (0)
+          (0) edge[above] node{\(a\)} (1)
+          (0) edge[below] node{\(b\)} (2);
       \end{tikzpicture}
     \end{minipage}
     \hfill
@@ -103,22 +159,19 @@
       \centering
       \begin{tikzpicture}[node distance=2.5cm]
         \node[state, initial] (0) {\(0\)};
-        \node[state, right of=0] (1) {\(1\)};
-        \node[state, accepting, below of=1] (2) {\(2\)};
-        \node[state, left of=2] (3) {\(3\)};
+        \node[state, accepting, right of=0] (1) {\(1\)};
 
         \node[above =.75cm of $(0)!0.5!(1)$, align=center] {\(M_2\)};
 
         \draw
-        (0) edge[above] node{\(a\)} (1)
-        (1) edge[right] node{\(b\)} (2)
-        (0) edge[left] node{\(a\)} (3);
+          (0) edge[loop below, below] node{\(a, b\)} (0)
+          (0) edge[above] node{\(a, b\)} (1);
       \end{tikzpicture}
     \end{minipage}
   \end{definition}
 \end{frame}
 
-\subsubsection{Lien entre les langages et les automates}
+\subsection{Lien entre les langages et les automates}
 
 \setframetitle{Lien entre les langages et les automates}
 
@@ -129,15 +182,14 @@
   \end{definition}
 \end{frame}
 
-\subsubsection{Complexité en état}
+\subsubsection{Complexité en états}
 
-\setframetitle{Complexité en état}
+\setframetitle{Complexité en états}
 
 \begin{frame}{\myframetitle}
   \begin{definition}
-    La << complexité en état >> est une mesure d'un \textbf{langage}, elle est
-    définie comme le nombre d'états de l'automate minimal du langage. Qui sera
-    noté \(\mathcal{C}(L)\).
+    La << complexité en états >> est une mesure d'un \textbf{langage}, elle
+    est définie comme le nombre d'états d'un automate minimal du langage.
   \end{definition}
 \end{frame}
 
@@ -171,14 +223,14 @@
 \end{frame}
 
 \begin{frame}{\myframetitle}
-  \begin{definition}[Complexité en état opérationniel]
+  \begin{definition}[Complexité en états opérationniel]
     La fonction \(f\) à une complexité \(g(n)\) si~:
     \begin{center}
       \begin{tikzpicture}[transform shape, scale=0.8]
-        \node[draw, ellipse, minimum width=1.5cm] (A) at (-3,0) {\(A\)};
+        \node[draw, ellipse, minimum width=1.5cm] (A) at (-3,0) {\(L_1\)};
         \node[draw, rectangle, minimum width=2cm, minimum height=1cm]
         (F) at (0,0) {\(f\)};
-        \node[draw, ellipse, minimum width=1.5cm] (C) at (3,0) {\(C\)};
+        \node[draw, ellipse, minimum width=1.5cm] (C) at (3,0) {\(L_2\)};
 
         \node[left =0.25cm of A] {\(n\)};
         \node[right =0.25cm of C] {\(k \leq g(n)\)};
@@ -188,4 +240,43 @@
       \end{tikzpicture}
     \end{center}
   \end{definition}
+\end{frame}
+
+\begin{frame}{\myframetitle}
+  \begin{example}[L'union de deux langages]
+    \centering
+      \begin{tikzpicture}[node distance=2.5cm, scale=0.7,transform shape]
+        \node[state, accepting, right of=0] (1) {\(1\)};
+
+        \only<1> {
+          \node[state, initial below] (0) {\(0\)};
+
+          \node[right = 2em of 1] (u) {\Large{\(\cup\)}};
+
+          \node[state, initial below, right = 2em of u] (2) {\(q_0\)};
+          \node[state, accepting, right of=2] (3) {\(q_1\)};
+
+          \draw (2) edge[loop above] node{\(b\)} (2);
+        }
+
+        \only<2-> {
+          \node[state, initial] (0) {\(0\)};
+
+          \node[state, initial, below of = 0] (2) {\(q_0\)};
+          \node[state, accepting, right of=2] (3) {\(q_1\)};
+
+          \draw (2) edge[loop below] node{\(b\)} (2);
+        }
+
+        \draw
+          (0) edge[loop above] node{\(a\)} (0)
+          (0) edge[above] node{\(a\)} (1)
+          (2) edge[above] node{\(b\)} (3);
+      \end{tikzpicture}
+      \only<3> {
+        \vphantom{}
+
+        La complexité de l'union est donc \(n + m\).
+      }
+  \end{example}
 \end{frame}
